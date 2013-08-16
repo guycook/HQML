@@ -1,4 +1,6 @@
 HQML
 ====
 
-Runtime for QML in a browser environment
+_Hyper Qt Meta Language_
+
+Runtime for QML applications in a browser environment
