@@ -32,6 +32,11 @@ var tree = {
           "type": "StringLiteral",
           "name": "color",
           "value": "blue"
+        },
+        {
+          "type": "Expression",
+          "name": "y",
+          "value": "this.x * 2"
         }
       ]
     }
@@ -40,10 +45,11 @@ var tree = {
 };
 
 // TODO: Generic version, more useful returns
-var getValue = function(arr, key) {
+// TODO: Put inside module once tidied up
+var getProperty = function(arr, key, keyField, valueField) {
   for(var i = 0; i < arr.length; i++) {
-    if(arr[i].name === key) {
-      return arr[i].value;
+    if(arr[i][keyField] === key) {
+      return arr[i][valueField];
     }
   }
   return null;
@@ -86,10 +92,43 @@ var getValue = function(arr, key) {
     }
 
     for(var prop in QObjects[type].defaultProperties) {
+      // TODO: When building AST, make bare references point to this /
+      //       alternately combine AST in this stage to make sure references are valid
+      // TODO: Handle properties with '.' in the name by created nested object
       // TODO: Create a computed if attribute type is an expression
-      obj._[prop] = ko.observable(getValue(attr, prop) || QObjects[type].defaultProperties[prop]);
+      var isExpression = getProperty(attr, prop, 'name', 'type') === 'Expression',
+          value = getProperty(attr, prop, 'name', 'value');
+      if(isExpression) {
+        (function(propName) {
+          obj._[propName] = ko.computed({
+            // TODO: Smarter generation of read
+            read: new Function("return " + value),
+            // Write function kills this computed and replaces it with an observable
+            // Adding computed expressions at runtime not supported by QML
+            write: function(v) {
+              var oldExpr = this._[propName];
+              this._[propName] = ko.observable(v);
+              Object.defineProperty(this, propName, {
+                get: this._[propName],
+                set: this._[propName]
+              });
+
+              // Use the old computed to force subscribers to rebind on new observable
+              oldExpr.notifySubscribers();
+              oldExpr.dispose();
+            },
+            owner: obj,
+            deferEvaluation: true
+          });
+        })(prop);
+      }
+      else {
+        obj._[prop] = ko.observable(value !== null ? value : QObjects[type].defaultProperties[prop]);
+      }
+
       Object.defineProperty(obj, prop, {
         enumerable: true,
+        configurable: true,
         get: obj._[prop],
         set: obj._[prop]
       });
@@ -111,7 +150,7 @@ var getValue = function(arr, key) {
   // ---------------------- // TODO: Complete implementation / Document
   // QML Item
   QObjects.Item = {
-    // TODO: Init function defining a layer
+    // TODO: Init function defining a layer, update which can move/resize it
   }
 
   Object.defineProperties(QObjects.Item, {
@@ -141,6 +180,7 @@ var getValue = function(arr, key) {
       this._.kRect.setWidth(this.width);
       this._.kRect.setHeight(this.height);
       this._.kRect.setFill(this.color);
+      this._.kRect.setCornerRadius(this.radius);
       this._.kLayer.batchDraw();
     }
   }
@@ -151,7 +191,8 @@ var getValue = function(arr, key) {
     },
     defaultProperties: {
       value: {
-        color: 'black'
+        color: 'black',
+        radius: 0
       }
     }
   });
