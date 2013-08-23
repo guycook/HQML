@@ -30,32 +30,52 @@ QObjectList
     }
 
 QObject 
-  = type:QIdentifier __ "{" __ attributes:QPropertyList? "}" {
-      return { type: type, attributes: attributes || [] };
+  = type:QIdentifier __ "{" __ definitions:QDefinitionList? "}" {
+      definitions = definitions || {};
+      definitions.type = type;
+      return definitions;
     }
 
-QPropertyList
-  = head:QPropertyAssignment tail:(__ QPropertyAssignment)* {
-      var result = [head];
+QDefinitionList
+  = head:QDefinition tail:(__ d:QDefinition { return d; })* {
+      var definitions = {};
+      tail.push(head);
       for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][1]);
+        if(definitions[tail[i].type]) {
+          definitions[tail[i].type].push(tail[i].value);
+        }
+        else {
+          definitions[tail[i].type] = [tail[i].value];
+        }
       }
-      return result;
+      return definitions;
     }
+
+QDefinition
+  = d:QPropertyAssignment { return { type: 'attributes', value: d }; }
+  / d:QPropertyDefinition { return { type: 'properties', value: d }; }
 
 QPropertyAssignment
   = "id" _ ":" _ value:Identifier EOS {
       return { name: "id", value: value };
   }
-  / name:QPropertyName _ ":" _ value:Literal EOS {
+  / name:QPropertyName _ ":" _ value:QPropertyValue EOS {
       return { type: value.type, name: name, value: value.value };
+    }
+
+QPropertyDefinition
+  = ("default" _)? "property" _ type:QIdentifier _ name:$([a-z] [a-zA-Z0-9_]*) _ ":" _ value:QPropertyValue EOS {
+      return { type: type, name: name, value: value.value };
     }
 
 QPropertyName
   = QIdentifier
 
+QPropertyValue
+  = Literal // TODO: Could be literal, function, block, qobject or expression(statement)
+
 QIdentifier
-  = $(Identifier / ".")*
+  = $(Identifier / ".")+
 
 /* Below from https://raw.github.com/dmajda/pegjs/master/examples/javascript.pegjs used under MIT license */
 
