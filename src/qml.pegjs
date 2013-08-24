@@ -62,7 +62,11 @@ QPropertyAssignment
       return { name: "id", value: value };
   }
   / name:QPropertyName _ ":" _ value:QPropertyValue {
-      return { type: value.type, name: name, value: value.value };
+      var type = value.type;
+      if(name.length > 2 && name.substr(0, 2) === "on" && name.charAt(2).toUpperCase() === name.charAt(2)) {
+        type = "SignalHandler";
+      }
+      return { type: type, name: name, value: value.value };
     }
 
 QPropertyDefinition
