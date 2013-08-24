@@ -56,6 +56,7 @@ QDefinition
   / d:QPropertyDefinition { return { type: 'properties', value: d }; }
   / d:QFunctionDeclaration { return { type: 'functions', value: d }; }
   / d:QObject { return { type: 'children', value: d }; }
+  / d:QBehavior { return { type: 'behaviors', value: d}; }
 
 QPropertyAssignment
   = "id" _ ":" _ value:Identifier EOS {
@@ -91,6 +92,8 @@ QFunctionDeclaration
       return { name: name, params: params !== "" ? params : [], src: src };
     }
 
+QBehavior
+  = "Behavior" _ "on" _ object:QObject { return object; }
 
 /* Below from https://raw.github.com/dmajda/pegjs/master/examples/javascript.pegjs used under MIT license */
 
