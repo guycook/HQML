@@ -54,6 +54,7 @@ QDefinitionList
 QDefinition
   = d:QPropertyAssignment { return { type: 'attributes', value: d }; }
   / d:QPropertyDefinition { return { type: 'properties', value: d }; }
+  / d:QFunctionDeclaration { return { type: 'functions', value: d }; }
 
 QPropertyAssignment
   = "id" _ ":" _ value:Identifier EOS {
@@ -76,6 +77,14 @@ QPropertyValue
 
 QIdentifier
   = $(Identifier / ".")+
+
+QFunctionDeclaration
+  = FunctionToken __ name:Identifier __
+    "(" __ params:FormalParameterList? __ ")" __
+    "{" __ src:$FunctionBody __ "}" {
+      return { name: name, params: params !== "" ? params : [], src: src };
+    }
+
 
 /* Below from https://raw.github.com/dmajda/pegjs/master/examples/javascript.pegjs used under MIT license */
 
