@@ -81,6 +81,7 @@ QPropertyName
 QPropertyValue // TODO: Could be literal, function, block, qobject or expression(statement)
   = d:Literal EOS { return d; }
   / d:$Statement { return { type: "Expression", value: d }; }
+  / d:QObject { return { type: "QObject", value: d }; }
 
 QIdentifier
   = $(Identifier / ".")+
