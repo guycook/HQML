@@ -30,7 +30,7 @@ QObjectList
     }
 
 QObject 
-  = type:QIdentifier __ "{" __ definitions:QDefinitionList? "}" {
+  = type:QIdentifier __ "{" __ definitions:(d:QDefinitionList __ { return d; })? "}" {
       definitions = definitions || {};
       definitions.type = type;
       return definitions;
@@ -55,25 +55,27 @@ QDefinition
   = d:QPropertyAssignment { return { type: 'attributes', value: d }; }
   / d:QPropertyDefinition { return { type: 'properties', value: d }; }
   / d:QFunctionDeclaration { return { type: 'functions', value: d }; }
+  / d:QObject { return { type: 'children', value: d }; }
 
 QPropertyAssignment
   = "id" _ ":" _ value:Identifier EOS {
       return { name: "id", value: value };
   }
-  / name:QPropertyName _ ":" _ value:QPropertyValue EOS {
+  / name:QPropertyName _ ":" _ value:QPropertyValue {
       return { type: value.type, name: name, value: value.value };
     }
 
 QPropertyDefinition
-  = ("default" _)? "property" _ type:QIdentifier _ name:$([a-z] [a-zA-Z0-9_]*) _ ":" _ value:QPropertyValue EOS {
+  = ("default" _)? "property" _ type:QIdentifier _ name:$([a-z] [a-zA-Z0-9_]*) _ ":" _ value:QPropertyValue {
       return { type: type, name: name, value: value.value };
     }
 
 QPropertyName
   = QIdentifier
 
-QPropertyValue
-  = Literal // TODO: Could be literal, function, block, qobject or expression(statement)
+QPropertyValue // TODO: Could be literal, function, block, qobject or expression(statement)
+  = d:Literal EOS { return d; }
+  / d:$Statement { return { type: "Expression", value: d }; }
 
 QIdentifier
   = $(Identifier / ".")+
