@@ -104,7 +104,7 @@ var getProperty = function(arr, key, keyField, valueField) {
             // TODO: Smarter generation of read
             read: new Function("return " + value),
             // Write function kills this computed and replaces it with an observable
-            // Adding computed expressions at runtime not supported by QML
+            // TODO: Adding computed expressions at runtime must be done via Qt.binding
             write: function(v) {
               var oldExpr = this._[propName];
               this._[propName] = ko.observable(v);
@@ -114,7 +114,7 @@ var getProperty = function(arr, key, keyField, valueField) {
               });
 
               // Use the old computed to force subscribers to rebind on new observable
-              oldExpr.notifySubscribers();
+              oldExpr.notifySubscribers(v);
               oldExpr.dispose();
             },
             owner: obj,
