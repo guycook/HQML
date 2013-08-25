@@ -83,11 +83,14 @@ var getProperty = function(arr, key, keyField, valueField) {
 
   var HQML = window.HQML || (window.HQML = {});
 
+  var initQueue = [];
+
   var QObjects = {};
 
   QObjects.create = function(config) {
     var type = config.type,
-        attr = config.attributes;
+        attr = config.attributes,
+        children = config.children || [];
 
     if(!(type in QObjects)) {
       throw new TypeError(type + ' is not a valid QML Object');
@@ -165,6 +168,15 @@ var getProperty = function(arr, key, keyField, valueField) {
         owner: obj,
         deferEvaluation: true
       });
+    }
+
+    // Create children, attach and put at front of init queue
+    obj.children = []
+    for(var i = 0; i < children.length; i++) {
+      var child = QObjects.create(children[i]);
+      child.parent = obj;
+      obj.children.push(child);
+      initQueue.unshift(child);
     }
 
     return obj;
@@ -260,13 +272,16 @@ var getProperty = function(arr, key, keyField, valueField) {
         var thisObj = QObjects.create(obj);
 
         thisObj.parent = root;
-        thisObj.init();
+        initQueue.unshift(thisObj);
         // TODO: init/parent assignment should be done by QObjects.create at end of inheritance chain
-
-        // TMP: Expose to outside world
-        window.q.push(thisObj);
       }
     });
+
+    for(var i = 0; i < initQueue.length; i++) {
+      initQueue[i].init();
+      // TMP: Expose to outside world
+      window.q.push(initQueue[i]);
+    }
   }
 
 })(window, document);
