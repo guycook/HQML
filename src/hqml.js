@@ -42,19 +42,53 @@ var getProperty = function(arr, key, keyField, valueField) {
       obj = Object.create(QObjects[type]);
     }
 
+    QObjects.addProperties(obj, QObjects[type].defaultProperties, attr);
+
+    // Make 'update' a self-observer
+    // TODO: Just implement this same as other QML expressions
+    if(typeof QObjects[type].update === 'function') {
+      obj.update = ko.computed({
+        read: QObjects[type].update,
+        owner: obj,
+        deferEvaluation: true
+      });
+    }
+
+    // Create children, attach and put at front of init queue
+    obj.children = []
+    for(var i = 0; i < children.length; i++) {
+      var child = QObjects.create(children[i]);
+      child.parent = obj;
+      obj.children.push(child);
+      initQueue.unshift(child);
+    }
+
+    return obj;
+  }
+
+  QObjects.addProperties = function(obj, propList, attr, prefix) {
+    if(!prefix) prefix = '';
+
     // Add observable properties to object
     // Public access by name, private implementer on _
     if(!obj._) {
       Object.defineProperty(obj, '_', { value: {} });
     }
 
-    for(var prop in QObjects[type].defaultProperties) {
+    for(var prop in propList) {
+      // Handle properties with '.' in the name by created nested object
+      if(typeof propList[prop] === 'object') {
+        obj[prop] = {};
+        QObjects.addProperties(obj[prop], propList[prop], attr, prefix + prop + '.');
+        continue;
+      }
+
       // TODO: When building AST, make bare references point to this /
       //       alternately combine AST in this stage to make sure references are valid
-      // TODO: Handle properties with '.' in the name by created nested object
-      // TODO: Create a computed if attribute type is an expression
-      var isExpression = getProperty(attr, prop, 'name', 'type') === 'Expression',
-          value = getProperty(attr, prop, 'name', 'value');
+
+      // Create a computed if attribute type is an expression
+      var isExpression = getProperty(attr, prefix + prop, 'name', 'type') === 'Expression',
+          value = getProperty(attr, prefix + prop, 'name', 'value');
       if(isExpression) {
         (function(propName) {
           obj._[propName] = ko.computed({
@@ -80,7 +114,7 @@ var getProperty = function(arr, key, keyField, valueField) {
         })(prop);
       }
       else {
-        obj._[prop] = ko.observable(value !== null ? value : QObjects[type].defaultProperties[prop]);
+        obj._[prop] = ko.observable(value !== null ? value : propList[prop]);
       }
 
       Object.defineProperty(obj, prop, {
@@ -90,27 +124,6 @@ var getProperty = function(arr, key, keyField, valueField) {
         set: obj._[prop]
       });
     }
-
-    // Make 'update' a self-observer
-    // TODO: Just implement this same as other QML expressions
-    if(typeof QObjects[type].update === 'function') {
-      obj.update = ko.computed({
-        read: QObjects[type].update,
-        owner: obj,
-        deferEvaluation: true
-      });
-    }
-
-    // Create children, attach and put at front of init queue
-    obj.children = []
-    for(var i = 0; i < children.length; i++) {
-      var child = QObjects.create(children[i]);
-      child.parent = obj;
-      obj.children.push(child);
-      initQueue.unshift(child);
-    }
-
-    return obj;
   }
 
   // ---------------------- // TODO: Complete implementation / Document
@@ -188,6 +201,7 @@ var getProperty = function(arr, key, keyField, valueField) {
     update: function() {
       this._.kText.setText(this.text);
       this._.kText.setFill(this.color);
+      this._.kText.setFontSize(this.font.pixelSize);
 
       this.draw();
     },
@@ -203,7 +217,10 @@ var getProperty = function(arr, key, keyField, valueField) {
     defaultProperties: {
       value: {
         color: 'black',
-        text: ''
+        text: '',
+        font: {
+          pixelSize: 12 // TODO: Custom setter for font.pointSize which writes correct pixelSize for device
+        }
       }
     }
   });
