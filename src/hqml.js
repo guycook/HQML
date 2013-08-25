@@ -1,52 +1,3 @@
-var tree = {
-  "objects": [
-    {
-      "attributes": [
-        {
-          "type": "NumericLiteral",
-          "name": "height",
-          "value": 300
-        },
-        {
-          "type": "StringLiteral",
-          "name": "color",
-          "value": "blue"
-        },
-        {
-          "type": "NumericLiteral",
-          "name": "width",
-          "value": 300
-        }
-      ],
-      "children": [
-        {
-          "attributes": [
-            {
-              "type": "StringLiteral",
-              "name": "color",
-              "value": "white"
-            },
-            {
-              "type": "StringLiteral",
-              "name": "text",
-              "value": "hello"
-            }
-          ],
-          "type": "Text"
-        }
-      ],
-      "type": "Rectangle"
-    }
-  ],
-  "imports": [
-    {
-      "name": "QtQuick",
-      "version": "2.0",
-      "as": ""
-    }
-  ]
-};
-
 // TODO: Generic version, more useful returns
 // TODO: Put inside module once tidied up
 var getProperty = function(arr, key, keyField, valueField) {
@@ -258,7 +209,7 @@ var getProperty = function(arr, key, keyField, valueField) {
   });
 
   // Exports
-  HQML.load = function() {
+  HQML.load = function(ast) {
     // TODO: Move root definition into module, use init params for dimensions/name
     var root = {
       init: function() {
@@ -279,7 +230,7 @@ var getProperty = function(arr, key, keyField, valueField) {
     root.init();
 
     window.q = []; // TMP
-    tree.objects.forEach(function(obj) {
+    ast.objects.forEach(function(obj) {
       if(obj.type in QObjects) {
 
         var thisObj = QObjects.create(obj);
@@ -300,4 +251,4 @@ var getProperty = function(arr, key, keyField, valueField) {
 })(window, document);
 
 // TODO: onload
-HQML.load();
+HQML.load(tree);
