@@ -238,7 +238,7 @@ var getProperty = function(arr, key, keyField, valueField) {
     },
     defaultProperties: {
       value: {
-        color: 'black',
+        color: 'white',
         radius: 0
       }
     }
