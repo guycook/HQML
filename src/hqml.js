@@ -201,7 +201,12 @@ var getProperty = function(arr, key, keyField, valueField) {
     update: function() {
       this._.kText.setText(this.text);
       this._.kText.setFill(this.color);
+      this._.kText.setFontFamily(this.font.family);
       this._.kText.setFontSize(this.font.pixelSize);
+
+      var style = (this.font.bold ? 'bold ' : '')
+                + (this.font.italic ? 'italic' : '');
+      this._.kText.setFontStyle(style);
 
       this.draw();
     },
@@ -219,7 +224,10 @@ var getProperty = function(arr, key, keyField, valueField) {
         color: 'black',
         text: '',
         font: {
-          pixelSize: 12 // TODO: Custom setter for font.pointSize which writes correct pixelSize for device
+          family: 'Arial, Helvetica',
+          pixelSize: 12, // TODO: Custom setter for font.pointSize which writes correct pixelSize for device
+          bold: false,
+          italic: false
         }
       }
     }
