@@ -42,7 +42,7 @@ var getProperty = function(arr, key, keyField, valueField) {
       obj = Object.create(QObjects[type]);
     }
 
-    QObjects.addProperties(obj, QObjects[type].defaultProperties, attr);
+    QObjects.addProperties(obj, obj, QObjects[type].defaultProperties, attr);
 
     // Make 'update' a self-observer
     // TODO: Just implement this same as other QML expressions
@@ -66,7 +66,7 @@ var getProperty = function(arr, key, keyField, valueField) {
     return obj;
   }
 
-  QObjects.addProperties = function(obj, propList, attr, prefix) {
+  QObjects.addProperties = function(context, obj, propList, attr, prefix) {
     if(!prefix) prefix = '';
 
     // Add observable properties to object
@@ -79,7 +79,7 @@ var getProperty = function(arr, key, keyField, valueField) {
       // Handle properties with '.' in the name by created nested object
       if(typeof propList[prop] === 'object') {
         obj[prop] = {};
-        QObjects.addProperties(obj[prop], propList[prop], attr, prefix + prop + '.');
+        QObjects.addProperties(context, obj[prop], propList[prop], attr, prefix + prop + '.');
         continue;
       }
 
@@ -92,8 +92,8 @@ var getProperty = function(arr, key, keyField, valueField) {
       if(isExpression) {
         (function(propName) {
           obj._[propName] = ko.computed({
-            // TODO: Smarter generation of read
-            read: new Function("return " + value),
+            // Provide the owning object as both 'this' and make its properties available through 'with'
+            read: (new Function("_context", "with(_context){return " + value + "}")).bind(context, context),
             // Write function kills this computed and replaces it with an observable
             // TODO: Adding computed expressions at runtime must be done via Qt.binding
             write: function(v) {
