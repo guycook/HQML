@@ -4,16 +4,6 @@ var tree = {
       "attributes": [
         {
           "type": "NumericLiteral",
-          "name": "y",
-          "value": 20
-        },
-        {
-          "type": "NumericLiteral",
-          "name": "width",
-          "value": 300
-        },
-        {
-          "type": "NumericLiteral",
           "name": "height",
           "value": 300
         },
@@ -24,35 +14,25 @@ var tree = {
         },
         {
           "type": "NumericLiteral",
-          "name": "x",
-          "value": 30
+          "name": "width",
+          "value": 300
         }
       ],
       "children": [
         {
           "attributes": [
             {
-              "type": "NumericLiteral",
-              "name": "width",
-              "value": 100
-            },
-            {
-              "type": "NumericLiteral",
-              "name": "height",
-              "value": 100
+              "type": "StringLiteral",
+              "name": "color",
+              "value": "white"
             },
             {
               "type": "StringLiteral",
-              "name": "color",
-              "value": "green"
-            },
-            {
-              "type": "NumericLiteral",
-              "name": "x",
-              "value": 40
+              "name": "text",
+              "value": "hello"
             }
           ],
-          "type": "Rectangle"
+          "type": "Text"
         }
       ],
       "type": "Rectangle"
@@ -240,6 +220,39 @@ var getProperty = function(arr, key, keyField, valueField) {
       value: {
         color: 'white',
         radius: 0
+      }
+    }
+  });
+
+  // ---------------------- // TODO: Complete implementation / Document
+  // QML Text
+  QObjects.Text = {
+    init: function() {
+      this._.kText = new Kinetic.Text({});
+      // TODO: Abstract out parent attachement with try/catch into own function
+      this.parent._.kNode.add(this._.kText);
+
+      this.update();
+    },
+    update: function() {
+      this._.kText.setText(this.text);
+      this._.kText.setFill(this.color);
+
+      this.draw();
+    },
+    draw: function() {
+      this.parent.draw();
+    }
+  }
+
+  Object.defineProperties(QObjects.Text, {
+    inherits: {
+      value: 'Item'
+    },
+    defaultProperties: {
+      value: {
+        color: 'black',
+        text: ''
       }
     }
   });
