@@ -1,32 +1,21 @@
 var tree = {
   "objects": [
     {
-      "type": "Rectangle",
       "attributes": [
         {
           "type": "NumericLiteral",
-          "name": "width",
-          "value": 364
-        },
-        {
-          "type": "NumericLiteral",
-          "name": "x",
+          "name": "y",
           "value": 20
         },
         {
-          "type": "StringLiteral",
-          "name": "color",
-          "value": "red"
-        }
-      ]
-    },
-    {
-      "type": "Rectangle",
-      "attributes": [
+          "type": "NumericLiteral",
+          "name": "width",
+          "value": 300
+        },
         {
           "type": "NumericLiteral",
           "name": "height",
-          "value": 140
+          "value": 300
         },
         {
           "type": "StringLiteral",
@@ -34,14 +23,48 @@ var tree = {
           "value": "blue"
         },
         {
-          "type": "Expression",
-          "name": "y",
-          "value": "this.x * 2"
+          "type": "NumericLiteral",
+          "name": "x",
+          "value": 30
         }
-      ]
+      ],
+      "children": [
+        {
+          "attributes": [
+            {
+              "type": "NumericLiteral",
+              "name": "width",
+              "value": 100
+            },
+            {
+              "type": "NumericLiteral",
+              "name": "height",
+              "value": 100
+            },
+            {
+              "type": "StringLiteral",
+              "name": "color",
+              "value": "green"
+            },
+            {
+              "type": "NumericLiteral",
+              "name": "x",
+              "value": 40
+            }
+          ],
+          "type": "Rectangle"
+        }
+      ],
+      "type": "Rectangle"
     }
   ],
-  "imports": []
+  "imports": [
+    {
+      "name": "QtQuick",
+      "version": "2.0",
+      "as": ""
+    }
+  ]
 };
 
 // TODO: Generic version, more useful returns
@@ -167,21 +190,33 @@ var getProperty = function(arr, key, keyField, valueField) {
   // ---------------------- // TODO: Complete implementation / Document
   // QML Rectangle
   QObjects.Rectangle = {
-    // TODO: Layer should be created/managed by Rectangle, not passed in
-    init: function(layer) {
-      this._.kRect = new Kinetic.Rect({});
-      layer.add(this._.kRect);
-      this._.kLayer = layer;
+    init: function() {
+      // TODO: Should this be group or layer? infer based on anim etc?
+      this._.kNode = new Kinetic.Group();
+      this._.kRect = new Kinetic.Rect();
+      this._.kNode.add(this._.kRect);
+      try {
+        this.parent._.kNode.add(this._.kNode);
+      }
+      catch (e) {
+        // Throw 'Rectangle cannot be child of parent.type'
+      }
+      this.update();
     },
     update: function() {
       // TODO: Maybe QObjects.create should automatically create subscribers for simple props?
-      this._.kRect.setX(this.x);
-      this._.kRect.setY(this.y);
+      this._.kNode.setX(this.x);
+      this._.kNode.setY(this.y);
+
       this._.kRect.setWidth(this.width);
       this._.kRect.setHeight(this.height);
       this._.kRect.setFill(this.color);
       this._.kRect.setCornerRadius(this.radius);
-      this._.kLayer.batchDraw();
+
+      this.draw();
+    },
+    draw: function() {
+      this.parent.draw();
     }
   }
 
@@ -199,29 +234,39 @@ var getProperty = function(arr, key, keyField, valueField) {
 
   // Exports
   HQML.load = function() {
-    var stage = new Kinetic.Stage({
-      container: 'container',
-      width: 800,
-      height: 600
-    });
+    // TODO: Move root definition into module, use init params for dimensions/name
+    var root = {
+      init: function() {
+        // TODO: User definable name, width, height
+        var stage = new Kinetic.Stage({
+          container: 'container',
+          width: 800,
+          height: 600
+        });
+        this._ = { kNode: new Kinetic.Layer() };
+        stage.add(this._.kNode);
+      },
+      draw: function() {
+        this._.kNode.batchDraw();
+      }
+    }
 
-    var layer = new Kinetic.Layer();
+    root.init();
 
+    window.q = []; // TMP
     tree.objects.forEach(function(obj) {
       if(obj.type in QObjects) {
 
         var thisObj = QObjects.create(obj);
 
-        thisObj.init(layer);
-        thisObj.update();
-        // TODO: init/update should be fired by QObjects.create at end of inheritance chain
+        thisObj.parent = root;
+        thisObj.init();
+        // TODO: init/parent assignment should be done by QObjects.create at end of inheritance chain
 
-        window.r = thisObj;
+        // TMP: Expose to outside world
+        window.q.push(thisObj);
       }
     });
-
-    // add the layer to the stage
-    stage.add(layer);
   }
 
 })(window, document);
