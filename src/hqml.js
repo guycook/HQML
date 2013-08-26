@@ -60,8 +60,8 @@ var getProperty = function(arr, key, keyField, valueField) {
       var child = QObjects.create(children[i]);
       child.parent = obj;
       obj.children.push(child);
-      initQueue.unshift(child);
     }
+    initQueue = obj.children.concat(initQueue);
 
     return obj;
   }
@@ -76,7 +76,7 @@ var getProperty = function(arr, key, keyField, valueField) {
     }
 
     for(var prop in propList) {
-      if(typeof propList[prop] === 'object' && typeof propList[prop].read !== 'function') {
+      if(propList[prop] && typeof propList[prop] === 'object' && typeof propList[prop].read !== 'function') {
         // Created nested object for QML properties with '.' in the name
         obj[prop] = {};
         QObjects.addProperties(context, obj[prop], propList[prop], attr, prefix + prop + '.');
@@ -116,7 +116,7 @@ var getProperty = function(arr, key, keyField, valueField) {
       else {
         // Does this property have special read/write semantics?
         // TODO: Somehow combine this with expressions above
-        if(typeof propList[prop].read === 'function') {
+        if(propList[prop] && typeof propList[prop] === 'object' && typeof propList[prop].read === 'function') {
           obj._[prop] = ko.computed({
             read: propList[prop].read,
             write: propList[prop].write,
