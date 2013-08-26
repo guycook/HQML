@@ -55,7 +55,7 @@ var getProperty = function(arr, key, keyField, valueField) {
     }
 
     // Create children, attach and put at front of init queue
-    obj.children = []
+    obj.children = [];
     for(var i = 0; i < children.length; i++) {
       var child = QObjects.create(children[i]);
       child.parent = obj;
@@ -76,8 +76,8 @@ var getProperty = function(arr, key, keyField, valueField) {
     }
 
     for(var prop in propList) {
-      // Handle properties with '.' in the name by created nested object
-      if(typeof propList[prop] === 'object') {
+      if(typeof propList[prop] === 'object' && typeof propList[prop].read !== 'function') {
+        // Created nested object for QML properties with '.' in the name
         obj[prop] = {};
         QObjects.addProperties(context, obj[prop], propList[prop], attr, prefix + prop + '.');
         continue;
@@ -114,7 +114,22 @@ var getProperty = function(arr, key, keyField, valueField) {
         })(prop);
       }
       else {
-        obj._[prop] = ko.observable(value !== null ? value : propList[prop]);
+        // Does this property have special read/write semantics?
+        // TODO: Somehow combine this with expressions above
+        if(typeof propList[prop].read === 'function') {
+          obj._[prop] = ko.computed({
+            read: propList[prop].read,
+            write: propList[prop].write,
+            owner: obj,
+            deferEvaluation: true
+          });
+          if(value !== null) {
+            obj._[prop](value);
+          }
+        }
+        else {
+          obj._[prop] = ko.observable(value !== null ? value : propList[prop]);
+        }
       }
 
       Object.defineProperty(obj, prop, {
@@ -199,6 +214,10 @@ var getProperty = function(arr, key, keyField, valueField) {
       this.update();
     },
     update: function() {
+      this._.kText.setX(this.x);
+      this._.kText.setY(this.y);
+      this._.kText.setWidth(this.width);
+      this._.kText.setHeight(this.height);
       this._.kText.setText(this.text);
       this._.kText.setFill(this.color);
       this._.kText.setFontFamily(this.font.family);
@@ -226,6 +245,10 @@ var getProperty = function(arr, key, keyField, valueField) {
         font: {
           family: 'Arial, Helvetica',
           pixelSize: 12, // TODO: Custom setter for font.pointSize which writes correct pixelSize for device
+          pointSize: {
+            read: function() { return this.pixelSize * 0.75; },
+            write: function(v) { this.pixelSize = v * 1.333333333; }
+          },
           bold: false,
           italic: false
         }
