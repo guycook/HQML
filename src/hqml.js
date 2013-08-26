@@ -152,8 +152,8 @@ var getProperty = function(arr, key, keyField, valueField) {
       value: {
         x: 0,
         y: 0,
-        width: 100,
-        height: 100
+        width: 800, // TODO: Use canvas dimensions
+        height: 600
       }
     }
   });
@@ -176,13 +176,20 @@ var getProperty = function(arr, key, keyField, valueField) {
     },
     update: function() {
       // TODO: Maybe QObjects.create should automatically create subscribers for simple props?
-      this._.kNode.setX(this.x);
-      this._.kNode.setY(this.y);
+      this._.kNode.setX(this.x + this.border.width / 2);
+      this._.kNode.setY(this.y + this.border.width / 2);
 
-      this._.kRect.setWidth(this.width);
-      this._.kRect.setHeight(this.height);
+      this._.kRect.setWidth(this.width - this.border.width);
+      this._.kRect.setHeight(this.height - this.border.width);
       this._.kRect.setFill(this.color);
-      this._.kRect.setCornerRadius(this.radius);
+      this._.kRect.setCornerRadius(this.radius - this.border.width / 4);
+
+      var stroke = !!this.border.width;
+      this._.kRect.setStrokeEnabled(stroke);
+      if(stroke) {
+        this._.kRect.setStrokeWidth(this.border.width);
+        this._.kRect.setStroke(this.border.color);
+      }
 
       this.draw();
     },
@@ -198,7 +205,12 @@ var getProperty = function(arr, key, keyField, valueField) {
     defaultProperties: {
       value: {
         color: 'white',
-        radius: 0
+        radius: 0,
+        border: {
+          color: 'black',
+          width: 0
+        },
+        gradient: null
       }
     }
   });
