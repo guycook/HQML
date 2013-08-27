@@ -13,6 +13,7 @@ var getProperty = function(arr, key, keyField, valueField) {
   "use strict";
 
   var HQML = window.HQML || (window.HQML = {});
+  HQML.context = {};
 
   var initQueue = [];
 
@@ -43,6 +44,15 @@ var getProperty = function(arr, key, keyField, valueField) {
     }
 
     QObjects.addProperties(obj, obj, QObjects[type].defaultProperties, attr);
+
+    // Add id and object to global context
+    var id = getProperty(attr, 'id', 'name', 'value');
+    if(id) {
+      obj.id = id;
+      HQML.context[id] = obj;
+      // TODO: Why is this being called twice??
+      //console.log('setting id ' + id);
+    }
 
     // Make 'update' a self-observer
     // TODO: Just implement this same as other QML expressions
@@ -93,7 +103,7 @@ var getProperty = function(arr, key, keyField, valueField) {
         (function(propName) {
           obj._[propName] = ko.computed({
             // Provide the owning object as both 'this' and make its properties available through 'with'
-            read: (new Function("_context", "with(_context){return " + value + "}")).bind(context, context),
+            read: (new Function("_this", "_context", "with(_context){with(_this){return " + value + "}}")).bind(context, context, HQML.context),
             // Write function kills this computed and replaces it with an observable
             // TODO: Adding computed expressions at runtime must be done via Qt.binding
             write: function(v) {
