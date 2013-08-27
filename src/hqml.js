@@ -43,7 +43,19 @@ var getProperty = function(arr, key, keyField, valueField) {
       obj = Object.create(QObjects[type]);
     }
 
+    // Build implementation of standard properties
     QObjects.addProperties(obj, obj, QObjects[type].defaultProperties, attr);
+
+    // Add read-only properties
+    for(var prop in QObjects[type].readOnly) {
+      Object.defineProperty(obj, prop, {
+        get: ko.computed({
+          read: QObjects[type].readOnly[prop],
+          owner: obj,
+          deferEvaluation: true
+        })
+      });
+    }
 
     // Add id and object to global context
     var id = getProperty(attr, 'id', 'name', 'value');
@@ -164,6 +176,17 @@ var getProperty = function(arr, key, keyField, valueField) {
         y: 0,
         width: 800, // TODO: Use canvas dimensions
         height: 600
+      }
+    },
+    readOnly: {
+      value: {
+        top: function() { return this.y; },
+        verticalCenter: function() { return this.y + Math.floor(this.height * 0.5); },
+        bottom: function() { return this.y + this.height; },
+        left: function() { return this.x; },
+        horizontalCenter: function() { return this.x + Math.floor(this.width * 0.5); },
+        right: function() { return this.x + this.width; },
+        baseline: function() { return this.y; }
       }
     }
   });
