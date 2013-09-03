@@ -29,7 +29,7 @@ QObjectList
       return result;
     }
 
-QObject 
+QObject
   = type:QIdentifier __ "{" __ definitions:(d:QDefinitionList __ { return d; })? "}" {
       definitions = definitions || {};
       definitions.type = type;
