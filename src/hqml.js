@@ -177,18 +177,38 @@ var nullOrUndefined = function() {
   QObjects.Item = {
     // TODO: Init function defining a layer, update which can move/resize it
     layout: function(node) {
-      if(!nullOrUndefined(this.border)) {
-        node.setX(this.x + this.border.width / 2);
-        node.setY(this.y + this.border.width / 2);
-        node.setWidth(this.width - this.border.width);
-        node.setHeight(this.height - this.border.width);
+      var x = this.x,
+          y = this.y,
+          width = this.width,
+          height = this.height,
+          border = nullOrUndefined(this.border) ? 0 : this.border.width;
+
+      if(!nullOrUndefined(this.anchors.top)) {
+        y = this.anchors.top + +this.anchors.topMargin;
       }
-      else {
-        node.setX(this.x);
-        node.setY(this.y);
-        node.setWidth(this.width);
-        node.setHeight(this.height);
+      if(!nullOrUndefined(this.anchors.bottom)) {
+        if(!nullOrUndefined(this.anchors.top)) {
+          height = this.anchors.bottom - y - +this.anchors.bottomMargin;
+        }
+        else {
+          y = this.anchors.bottom - height - +this.anchors.bottomMargin;
+        }
       }
+      if(!nullOrUndefined(this.anchors.left)) {
+        x = this.anchors.left + +this.anchors.leftMargin;
+      }
+      if(!nullOrUndefined(this.anchors.right)) {
+        if(!nullOrUndefined(this.anchors.left)) {
+          width = this.anchors.right - x - +this.anchors.rightMargin;
+        }
+        else {
+          x = this.anchors.right - width - +this.anchors.rightMargin;
+        }
+      }
+      node.setX(x + border / 2);
+      node.setY(y + border / 2);
+      node.setWidth(width - border);
+      node.setHeight(height - border);
     }
   }
 
@@ -209,6 +229,10 @@ var nullOrUndefined = function() {
           baseline: null,
           fill: null,
           centerIn: null,
+          topMargin: null,
+          bottomMargin: null,
+          leftMargin: null,
+          rightMargin: null,
           margins: {
             read: function() {
               return { top: this.topMargin, bottom: this.bottomMargin, left: this.leftMargin, right: this.rightMargin };
@@ -217,10 +241,6 @@ var nullOrUndefined = function() {
               this.topMargin = this.bottomMargin = this.leftMargin = this.rightMargin = v;
             }
           },
-          topMargin: null,
-          bottomMargin: null,
-          leftMargin: null,
-          rightMargin: null,
           horizontalCenterOffset: null,
           verticalCenterOffset: null,
           baselineOffset: null,
