@@ -7,9 +7,18 @@ var getProperty = function(arr, key, keyField, valueField) {
     }
   }
   return null;
-};
+}
 
-(function(window, document, undefined) {
+var nullOrUndefined = function() {
+  for(var i = 0; i < arguments.length; i++) {
+    if(arguments[i] !== null && arguments[i] !== undefined) {
+      return false;
+    }
+  }
+  return true;
+}
+
+;(function(window, document, undefined) {
   "use strict";
 
   var HQML = window.HQML || (window.HQML = {});
