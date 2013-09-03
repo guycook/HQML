@@ -183,6 +183,20 @@ var nullOrUndefined = function() {
           height = this.height,
           border = nullOrUndefined(this.border) ? 0 : this.border.width;
 
+      // Centre horizontally and vertically if required
+      if(!nullOrUndefined(this.anchors.horizontalCenter)) {
+        x = this.anchors.horizontalCenter - (width * 0.5) + +this.anchors.horizontalCenterOffset;
+        if(this.anchors.alignWhenCentered) {
+          x = Math.round(x);
+        }
+      }
+      if(!nullOrUndefined(this.anchors.verticalCenter)) {
+        y = this.anchors.verticalCenter - (height * 0.5) + +this.anchors.verticalCenterOffset;
+        if(this.anchors.alignWhenCentered) {
+          y = Math.round(y);
+        }
+      }
+
       if(!nullOrUndefined(this.anchors.top)) {
         y = this.anchors.top + +this.anchors.topMargin;
       }
@@ -329,6 +343,8 @@ var nullOrUndefined = function() {
     },
     update: function() {
       this.layout(this._.kText);
+
+      // TODO: Baseline anchor implementation here
 
       this._.kText.setText(this.text);
       this._.kText.setFill(this.color);
