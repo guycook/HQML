@@ -167,6 +167,9 @@ var getProperty = function(arr, key, keyField, valueField) {
   // QML Item
   QObjects.Item = {
     // TODO: Init function defining a layer, update which can move/resize it
+    layout: function(node) {
+      ;
+    }
   }
 
   Object.defineProperties(QObjects.Item, {
@@ -175,7 +178,34 @@ var getProperty = function(arr, key, keyField, valueField) {
         x: 0,
         y: 0,
         width: 800, // TODO: Use canvas dimensions
-        height: 600
+        height: 600,
+        anchors: {
+          top: null,
+          bottom: null,
+          left: null,
+          right: null,
+          horizontalCenter: null,
+          verticalCenter: null,
+          baseline: null,
+          fill: null,
+          centerIn: null,
+          margins: {
+            read: function() {
+              return { top: this.topMargin, bottom: this.bottomMargin, left: this.leftMargin, right: this.rightMargin };
+            },
+            write: function(v) {
+              this.topMargin = this.bottomMargin = this.leftMargin = this.rightMargin = v;
+            }
+          },
+          topMargin: null,
+          bottomMargin: null,
+          leftMargin: null,
+          rightMargin: null,
+          horizontalCenterOffset: null,
+          verticalCenterOffset: null,
+          baselineOffset: null,
+          alignWhenCentered: true
+        }
       }
     },
     readOnly: {
