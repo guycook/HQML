@@ -177,7 +177,18 @@ var nullOrUndefined = function() {
   QObjects.Item = {
     // TODO: Init function defining a layer, update which can move/resize it
     layout: function(node) {
-      ;
+      if(!nullOrUndefined(this.border)) {
+        node.setX(this.x + this.border.width / 2);
+        node.setY(this.y + this.border.width / 2);
+        node.setWidth(this.width - this.border.width);
+        node.setHeight(this.height - this.border.width);
+      }
+      else {
+        node.setX(this.x);
+        node.setY(this.y);
+        node.setWidth(this.width);
+        node.setHeight(this.height);
+      }
     }
   }
 
@@ -247,12 +258,11 @@ var nullOrUndefined = function() {
       this.update();
     },
     update: function() {
-      // TODO: Maybe QObjects.create should automatically create subscribers for simple props?
-      this._.kNode.setX(this.x + this.border.width / 2);
-      this._.kNode.setY(this.y + this.border.width / 2);
+      this.layout(this._.kNode);
 
-      this._.kRect.setWidth(this.width - this.border.width);
-      this._.kRect.setHeight(this.height - this.border.width);
+      this._.kRect.setWidth(this._.kNode.getWidth());
+      this._.kRect.setHeight(this._.kNode.getHeight());
+
       this._.kRect.setFill(this.color);
       this._.kRect.setCornerRadius(this.radius - this.border.width / 4);
 
@@ -298,10 +308,8 @@ var nullOrUndefined = function() {
       this.update();
     },
     update: function() {
-      this._.kText.setX(this.x);
-      this._.kText.setY(this.y);
-      this._.kText.setWidth(this.width);
-      this._.kText.setHeight(this.height);
+      this.layout(this._.kText);
+
       this._.kText.setText(this.text);
       this._.kText.setFill(this.color);
       this._.kText.setFontFamily(this.font.family);
