@@ -1,6 +1,12 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    jshint: {
+      files: ['src/**/*.js'],
+      options: {
+        '-W054': true,
+      }
+    },
     concat: {
       base: {
         src: [
@@ -21,9 +27,10 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
   // Default - concat and minify hqml sources
-  grunt.registerTask('default', ['concat:base', 'uglify:base']);
+  grunt.registerTask('default', ['jshint', 'concat:base', 'uglify:base']);
 
 };

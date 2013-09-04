@@ -18,6 +18,29 @@ function nullOrUndefined() {
   return true;
 }
 
+function addExpressionProperty(obj, prop, expr, context) {
+  obj._[prop] = ko.computed({
+    // Provide the owning object as both 'this' and make its properties available through 'with'
+    read: (new Function("_this", "_context", "with(_context){with(_this){return " + expr + "}}")).bind(context, context, HQML.context),
+    // Write function kills this computed and replaces it with an observable
+    // TODO: Adding computed expressions at runtime must be done via Qt.binding
+    write: function(v) {
+      var oldExpr = this._[prop];
+      this._[prop] = ko.observable(v);
+      Object.defineProperty(this, prop, {
+        get: this._[prop],
+        set: this._[prop]
+      });
+
+      // Use the old computed to force subscribers to rebind on new observable
+      oldExpr.notifySubscribers(v);
+      oldExpr.dispose();
+    },
+    owner: obj,
+    deferEvaluation: true
+  });
+}
+
 ;(function(window, document, undefined) {
   "use strict";
 
@@ -114,35 +137,11 @@ function nullOrUndefined() {
         continue;
       }
 
-      // TODO: When building AST, make bare references point to this /
-      //       alternately combine AST in this stage to make sure references are valid
-
       // Create a computed if attribute type is an expression
       var isExpression = getProperty(attr, prefix + prop, 'name', 'type') === 'Expression',
           value = getProperty(attr, prefix + prop, 'name', 'value');
       if(isExpression) {
-        (function(propName) {
-          obj._[propName] = ko.computed({
-            // Provide the owning object as both 'this' and make its properties available through 'with'
-            read: (new Function("_this", "_context", "with(_context){with(_this){return " + value + "}}")).bind(context, context, HQML.context),
-            // Write function kills this computed and replaces it with an observable
-            // TODO: Adding computed expressions at runtime must be done via Qt.binding
-            write: function(v) {
-              var oldExpr = this._[propName];
-              this._[propName] = ko.observable(v);
-              Object.defineProperty(this, propName, {
-                get: this._[propName],
-                set: this._[propName]
-              });
-
-              // Use the old computed to force subscribers to rebind on new observable
-              oldExpr.notifySubscribers(v);
-              oldExpr.dispose();
-            },
-            owner: obj,
-            deferEvaluation: true
-          });
-        })(prop);
+        addExpressionProperty(obj, prop, value, context);
       }
       else {
         // Does this property have special read/write semantics?
