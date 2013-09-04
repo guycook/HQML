@@ -1,6 +1,6 @@
 // TODO: Generic version, more useful returns
 // TODO: Put inside module once tidied up
-var getProperty = function(arr, key, keyField, valueField) {
+function getProperty (arr, key, keyField, valueField) {
   for(var i = 0; i < arr.length; i++) {
     if(arr[i][keyField] === key) {
       return arr[i][valueField];
@@ -9,7 +9,7 @@ var getProperty = function(arr, key, keyField, valueField) {
   return null;
 }
 
-var nullOrUndefined = function() {
+function nullOrUndefined() {
   for(var i = 0; i < arguments.length; i++) {
     if(arguments[i] !== null && arguments[i] !== undefined) {
       return false;
@@ -95,7 +95,7 @@ var nullOrUndefined = function() {
     initQueue = obj.children.concat(initQueue);
 
     return obj;
-  }
+  };
 
   QObjects.addProperties = function(context, obj, propList, attr, prefix) {
     if(!prefix) prefix = '';
@@ -170,7 +170,7 @@ var nullOrUndefined = function() {
         set: obj._[prop]
       });
     }
-  }
+  };
 
   // ---------------------- // TODO: Complete implementation / Document
   // QML Item
@@ -185,38 +185,38 @@ var nullOrUndefined = function() {
 
       // Centre horizontally and vertically if required
       if(!nullOrUndefined(this.anchors.horizontalCenter)) {
-        x = this.anchors.horizontalCenter - (width * 0.5) + +this.anchors.horizontalCenterOffset;
+        x = this.anchors.horizontalCenter - (width * 0.5) + (+this.anchors.horizontalCenterOffset);
         if(this.anchors.alignWhenCentered) {
           x = Math.round(x);
         }
       }
       if(!nullOrUndefined(this.anchors.verticalCenter)) {
-        y = this.anchors.verticalCenter - (height * 0.5) + +this.anchors.verticalCenterOffset;
+        y = this.anchors.verticalCenter - (height * 0.5) + (+this.anchors.verticalCenterOffset);
         if(this.anchors.alignWhenCentered) {
           y = Math.round(y);
         }
       }
 
       if(!nullOrUndefined(this.anchors.top)) {
-        y = this.anchors.top + +this.anchors.topMargin;
+        y = this.anchors.top + (+this.anchors.topMargin);
       }
       if(!nullOrUndefined(this.anchors.bottom)) {
         if(!nullOrUndefined(this.anchors.top)) {
-          height = this.anchors.bottom - y - +this.anchors.bottomMargin;
+          height = this.anchors.bottom - y - (+this.anchors.bottomMargin);
         }
         else {
-          y = this.anchors.bottom - height - +this.anchors.bottomMargin;
+          y = this.anchors.bottom - height - (+this.anchors.bottomMargin);
         }
       }
       if(!nullOrUndefined(this.anchors.left)) {
-        x = this.anchors.left + +this.anchors.leftMargin;
+        x = this.anchors.left + (+this.anchors.leftMargin);
       }
       if(!nullOrUndefined(this.anchors.right)) {
         if(!nullOrUndefined(this.anchors.left)) {
-          width = this.anchors.right - x - +this.anchors.rightMargin;
+          width = this.anchors.right - x - +(this.anchors.rightMargin);
         }
         else {
-          x = this.anchors.right - width - +this.anchors.rightMargin;
+          x = this.anchors.right - width - +(this.anchors.rightMargin);
         }
       }
       node.setX(x + border / 2);
@@ -224,7 +224,7 @@ var nullOrUndefined = function() {
       node.setWidth(width - border);
       node.setHeight(height - border);
     }
-  }
+  };
 
   Object.defineProperties(QObjects.Item, {
     defaultProperties: {
@@ -312,7 +312,7 @@ var nullOrUndefined = function() {
     draw: function() {
       this.parent.draw();
     }
-  }
+  };
 
   Object.defineProperties(QObjects.Rectangle, {
     inherits: {
@@ -356,8 +356,8 @@ var nullOrUndefined = function() {
       this._.kText.setFontFamily(this.font.family);
       this._.kText.setFontSize(this.font.pixelSize);
 
-      var style = (this.font.bold ? 'bold ' : '')
-                + (this.font.italic ? 'italic' : '');
+      var style = (this.font.bold ? 'bold ' : '') +
+                  (this.font.italic ? 'italic' : '');
       this._.kText.setFontStyle(style);
 
       if(!this._.manualWidth) {
@@ -378,7 +378,7 @@ var nullOrUndefined = function() {
     draw: function() {
       this.parent.draw();
     }
-  }
+  };
 
   Object.defineProperties(QObjects.Text, {
     inherits: {
@@ -419,7 +419,7 @@ var nullOrUndefined = function() {
       draw: function() {
         this._.kNode.batchDraw();
       }
-    }
+    };
 
     root.init();
 
@@ -440,7 +440,7 @@ var nullOrUndefined = function() {
       // TMP: Expose to outside world
       window.q.push(initQueue[i]);
     }
-  }
+  };
 
 })(window, document);
 
