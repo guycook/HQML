@@ -422,7 +422,6 @@ function addExpressionProperty(obj, prop, expr, context) {
 
     root.init();
 
-    window.q = []; // TMP
     ast.objects.forEach(function(obj) {
       if(obj.type in QObjects) {
 
@@ -436,8 +435,6 @@ function addExpressionProperty(obj, prop, expr, context) {
 
     for(var i = 0; i < initQueue.length; i++) {
       initQueue[i].init();
-      // TMP: Expose to outside world
-      window.q.push(initQueue[i]);
     }
   };
 
