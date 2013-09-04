@@ -1,4 +1,6 @@
 module.exports = function(grunt) {
+  var header = '/*\n <%= pkg.name.toUpperCase() %> <%= pkg.version %>\n ' +
+               '(c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n License: <%= pkg.license %>\n*/\n';
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
@@ -8,16 +10,23 @@ module.exports = function(grunt) {
       }
     },
     concat: {
+      options: {
+        banner: header
+      },
       base: {
         src: [
-          'src/hqml.js'
+          'src/browser.prefix',
+          'src/util.js',
+          'src/hqml.js',
+          'src/objects/**/*.js',
+          'src/browser.postfix'
         ],
         dest: 'build/<%= pkg.name %>.js'
       }
     },
     uglify: {
       options: {
-        banner: '/*\n <%= pkg.name.toUpperCase() %>\n (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n License: <%= pkg.license %>\n*/\n'
+        banner: header
       },
       base: {
         src: 'build/<%= pkg.name %>.js',
@@ -26,8 +35,8 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
   // Default - concat and minify hqml sources
