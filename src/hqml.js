@@ -42,6 +42,22 @@ QObjects.create = function(config) {
     });
   }
 
+  // Add signals
+  // onSigname is a writable property which creates a bound function callable by signame
+  if(!nullOrUndefined(QObjects[type].signals)) {
+    QObjects[type].signals.forEach(function(signal) {
+      var handleProperty = 'on' + signal.charAt(0).toUpperCase() + signal.substr(1);
+      var handler = getProperty(attr, handleProperty, 'name', 'value');
+
+      Object.defineProperty(obj, handleProperty, {
+        set: function(v) {
+          this[signal] = (new Function("_this", "_context", "with(_context){with(_this){" + v + "}}")).bind(this, this, HQML.context);
+        }
+      });
+      if(handler) obj[handleProperty] = handler;
+    });
+  }
+
   // Add id and object to global context
   // TODO: This shouldn't be in the inheritance path - move to else block above?
   var id = getProperty(attr, 'id', 'name', 'value');

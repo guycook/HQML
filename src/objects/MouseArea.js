@@ -5,6 +5,13 @@ QObjects.MouseArea = {
   init: function() {
     this._.kNode = new Kinetic.Rect();
 
+    var self = this;
+    this._.kNode.on('click.signal', function() {
+      if(self.enabled && /*TODO: this.acceptedButtons & mouse.button &&*/ !nullOrUndefined(self.clicked)) {
+        self.clicked(); // TODO: Mouse object as first param
+      }
+    });
+
     try {
       this.parent._.kNode.add(this._.kNode);
     }
@@ -15,11 +22,6 @@ QObjects.MouseArea = {
   },
   update: function() {
     this.layout(this._.kNode);
-
-    if(!nullOrUndefined(this.onClicked)) {
-      this._.kNode.on('click',
-        (new Function("_this", "_context", "with(_context){with(_this){" + this.onClicked + "}}")).bind(this, this, HQML.context));
-    }
   }
 };
 
@@ -44,8 +46,7 @@ Object.defineProperties(QObjects.MouseArea, {
       enabled: true,
       hoverEnabled: false,
       preventStealing: false,
-      propagateComposedEvents: false,
-      onClicked: null
+      propagateComposedEvents: false
     }
   },
   readOnly: {
@@ -56,5 +57,10 @@ Object.defineProperties(QObjects.MouseArea, {
       pressed: function() { return false; }, // TODO: Implement
       pressedButtons: function() { return null; } // TODO: Implement
     }
+  },
+  signals: {
+    value : [
+      'clicked'
+    ]
   }
 });
