@@ -57,8 +57,8 @@ Object.defineProperties(QObjects.Item, {
     value: {
       x: 0,
       y: 0,
-      width: 800, // TODO: Use canvas dimensions
-      height: 600,
+      width: 0,
+      height: 0,
       anchors: {
         top: null,
         bottom: null,
