@@ -31,6 +31,10 @@ module.exports = function(grunt) {
       base: {
         src: 'build/<%= pkg.name %>.js',
         dest: 'build/<%= pkg.name %>.min.js'
+      },
+      parser: {
+        src: 'build/qmlparser.tmp',
+        dest: 'build/qmlparser.js'
       }
     }
   });
@@ -42,4 +46,17 @@ module.exports = function(grunt) {
   // Default - concat and minify hqml sources
   grunt.registerTask('default', ['jshint', 'concat:base', 'uglify:base']);
 
+  // Rebuild parser from pegjs grammer
+  grunt.registerTask('parser', function() {
+    var PEG = require("./lib/pegjs/lib/peg");
+    var fs = require('fs');
+    var parseSource = PEG.buildParser(fs.readFileSync('src/qml.pegjs', { encoding: 'utf8' }), {
+      output: 'source'
+    });
+    fs.writeFileSync('build/qmlparser.tmp', 'QMLParser = ' + parseSource, { encoding: 'utf8' });
+    grunt.task.run('uglify:parser', 'cleanparser');
+  });
+  grunt.registerTask('cleanparser', function() {
+    require('fs').unlinkSync('build/qmlparser.tmp');
+  });
 };
