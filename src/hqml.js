@@ -163,13 +163,25 @@ QObjects.addExpressionProperty = function(obj, prop, expr, context) {
 };
 
 // Exports
-HQML.load = function(ast) {
+HQML.startFile = function(container, qmlFile) {
+  // TODO: Error handling
+  superagent(qmlFile, function(res) {
+    HQML.startString(container, res.text);
+  });
+};
+
+HQML.startString = function(container, qmlString) {
+  // TODO: Error handling
+  HQML.runParsed(container, QMLParser.parse(qmlString));
+};
+
+HQML.runParsed = function(container, ast) {
   // TODO: Move root definition into module, use init params for dimensions/name
   var root = {
     init: function() {
       // TODO: User definable name, width, height
       var stage = new Kinetic.Stage({
-        container: 'container',
+        container: container,
         width: 800,
         height: 600
       });
