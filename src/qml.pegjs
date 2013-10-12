@@ -73,7 +73,12 @@ QPropertyAssignment
 QPropertyDefinition
   = ("default" _)? "property" _ type:$(QPropertyName / "var") _ name:$([a-z] [a-zA-Z0-9_]*) _
     value:(":" _ v:QPropertyValue { return v; })? {
-      return { type: type, name: name, value: value.value || null };
+      return {
+        propertyType: type,
+        type: value ? value.type : "NullLiteral",
+        name: name,
+        value: value ? value.value : null
+      };
     }
 
 QPropertyName
