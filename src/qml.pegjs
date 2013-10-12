@@ -71,8 +71,9 @@ QPropertyAssignment
     }
 
 QPropertyDefinition
-  = ("default" _)? "property" _ type:QIdentifier _ name:$([a-z] [a-zA-Z0-9_]*) _ ":" _ value:QPropertyValue {
-      return { type: type, name: name, value: value.value };
+  = ("default" _)? "property" _ type:$(QPropertyName / "var") _ name:$([a-z] [a-zA-Z0-9_]*) _
+    value:(":" _ v:QPropertyValue { return v; })? {
+      return { type: type, name: name, value: value.value || null };
     }
 
 QPropertyName
