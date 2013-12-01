@@ -18,6 +18,7 @@ module.exports = function(grunt) {
           'src/browser.prefix',
           'src/util.js',
           'src/hqml.js',
+          'src/enums/**/*.js',
           'src/objects/**/*.js',
           'src/browser.postfix'
         ],
