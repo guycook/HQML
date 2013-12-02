@@ -14,7 +14,6 @@ QObjects.Image = {
     }
 
     this._.domImage = new Image();
-    this._.kImage.setImage(this._.domImage);
 
     // When the user assigns the source attribute nextSource is set
     // to the provided value, which triggers the download of the image
@@ -52,6 +51,23 @@ QObjects.Image = {
     }
 
     this.layout(this._.kNode);
+    var nodeWidth = this._.kNode.getWidth(),
+        nodeHeight = this._.kNode.getHeight(),
+        imageWidth = this._.domImage.naturalWidth,
+        imageHeight = this._.domImage.naturalHeight;
+
+    if(this.fillMode === Image.Stretch) {
+      this._.kImage.setFillPatternImage(null);
+      this._.kImage.setImage(this._.domImage);
+    }
+    else {
+      this._.kImage.setImage(null);
+      this._.kImage.setFillPatternImage(this._.domImage);
+      if(this.fillMode === Image.Tile) {
+        // Pattern needs to be offset to fill about the centre
+        this._.kImage.setFillPatternOffset([-0.5 * (nodeWidth - imageWidth), -0.5 * (nodeHeight - imageHeight)]);
+      }
+    }
 
     this._.kImage.setWidth(this._.kNode.getWidth());
     this._.kImage.setHeight(this._.kNode.getHeight());
@@ -71,7 +87,7 @@ Object.defineProperties(QObjects.Image, {
     value: {
       //asynchronous: bool,
       //cache: bool,
-      //fillMode: enumeration,
+      fillMode: Image.Stretch,
       //horizontalAlignment: enumeration,
       //mirror: false,
       //paintedHeight: real,
