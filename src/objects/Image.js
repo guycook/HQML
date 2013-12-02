@@ -51,14 +51,35 @@ QObjects.Image = {
     }
 
     this.layout(this._.kNode);
+
     var nodeWidth = this._.kNode.getWidth(),
         nodeHeight = this._.kNode.getHeight(),
         imageWidth = this._.domImage.naturalWidth,
         imageHeight = this._.domImage.naturalHeight;
 
-    if(this.fillMode === Image.Stretch) {
+    // TODO: Store the to-be-set values in a var and set them once at the end
+    this._.kImage.setX(0);
+    this._.kImage.setY(0);
+    this._.kImage.setWidth(nodeWidth);
+    this._.kImage.setHeight(nodeHeight);
+
+    if(this.fillMode === Image.Stretch || this.fillMode == Image.PreserveAspectFit) {
       this._.kImage.setFillPatternImage(null);
       this._.kImage.setImage(this._.domImage);
+      if(this.fillMode === Image.PreserveAspectFit) {
+        // Set the size of kImage to fit inside kNode
+        var scale = 1, rX = nodeWidth / imageWidth, rY = nodeHeight / imageHeight;
+        if(rX < rY) {
+          scale = rX;
+          this._.kImage.setY((nodeHeight - imageHeight * scale) * 0.5);
+        }
+        else {
+          scale = rY;
+          this._.kImage.setX((nodeWidth - imageWidth * scale) * 0.5);
+        }
+        this._.kImage.setWidth(imageWidth * scale);
+        this._.kImage.setHeight(imageHeight * scale);
+      }
     }
     else {
       this._.kImage.setImage(null);
@@ -68,9 +89,6 @@ QObjects.Image = {
         this._.kImage.setFillPatternOffset([-0.5 * (nodeWidth - imageWidth), -0.5 * (nodeHeight - imageHeight)]);
       }
     }
-
-    this._.kImage.setWidth(this._.kNode.getWidth());
-    this._.kImage.setHeight(this._.kNode.getHeight());
 
     this.draw();
   },
