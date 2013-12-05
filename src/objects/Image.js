@@ -62,6 +62,7 @@ QObjects.Image = {
     this._.kImage.setY(0);
     this._.kImage.setWidth(nodeWidth);
     this._.kImage.setHeight(nodeHeight);
+    this._.kImage.setFillPatternOffset([0, 0]);
 
     if(this.fillMode === Image.Stretch || this.fillMode == Image.PreserveAspectFit) {
       this._.kImage.setFillPatternImage(null);
@@ -87,6 +88,18 @@ QObjects.Image = {
       if(this.fillMode === Image.Tile) {
         // Pattern needs to be offset to fill about the centre
         this._.kImage.setFillPatternOffset([-0.5 * (nodeWidth - imageWidth), -0.5 * (nodeHeight - imageHeight)]);
+      }
+      else if(this.fillMode === Image.PreserveAspectCrop) {
+        var scale = 1, rX = nodeWidth / imageWidth, rY = nodeHeight / imageHeight;
+        if(rX < rY) {
+          scale = rY;
+          this._.kImage.setFillPatternOffsetX((nodeHeight - nodeWidth) * 0.5 / scale);
+        }
+        else {
+          scale = rX;
+          this._.kImage.setFillPatternOffsetY((nodeWidth - nodeHeight) * 0.5 / scale);
+        }
+        this._.kImage.setFillPatternScale(scale);
       }
     }
 
