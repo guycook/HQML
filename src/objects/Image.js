@@ -116,8 +116,13 @@ Object.defineProperties(QObjects.Image, {
   },
   defaultProperties: {
     value: {
-      //asynchronous: bool,
-      //cache: bool,
+      // Though set to false by default in the QML standard the asynchronous
+      // property will always behave as though set to true in HQML. Changing
+      // it has no effect besides the usual signal and binding handlers.
+      asynchronous: false,
+      // The caching behaviour of Images will be determined by browser settings,
+      // changing the value will have no effect besides signals and bindings.
+      cache: true,
       fillMode: Image.Stretch,
       //horizontalAlignment: enumeration,
       //mirror: false,
