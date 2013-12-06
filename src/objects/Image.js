@@ -62,6 +62,7 @@ QObjects.Image = {
     this._.kImage.setY(0);
     this._.kImage.setWidth(nodeWidth);
     this._.kImage.setHeight(nodeHeight);
+    this._.kImage.setFillPatternScale([1, 1]);
     this._.kImage.setFillPatternOffset([0, 0]);
 
     if(this.fillMode === Image.Stretch || this.fillMode == Image.PreserveAspectFit) {
@@ -100,6 +101,10 @@ QObjects.Image = {
           this._.kImage.setFillPatternOffsetY((nodeWidth - nodeHeight) * 0.5 / scale);
         }
         this._.kImage.setFillPatternScale(scale);
+      }
+      else if(this.fillMode === Image.TileVertically) {
+        this._.kImage.setFillPatternScaleX(nodeWidth / imageWidth);
+        this._.kImage.setFillPatternOffsetY((imageHeight - nodeHeight) * 0.5);
       }
     }
 
