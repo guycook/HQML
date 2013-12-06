@@ -106,6 +106,10 @@ QObjects.Image = {
         this._.kImage.setFillPatternScaleX(nodeWidth / imageWidth);
         this._.kImage.setFillPatternOffsetY((imageHeight - nodeHeight) * 0.5);
       }
+      else if(this.fillMode === Image.TileHorizontally) {
+        this._.kImage.setFillPatternScaleY(nodeHeight / imageHeight);
+        this._.kImage.setFillPatternOffsetX((imageWidth - nodeWidth) * 0.5);
+      }
     }
 
     this.draw();
