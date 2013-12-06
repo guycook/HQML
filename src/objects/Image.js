@@ -110,6 +110,11 @@ QObjects.Image = {
         this._.kImage.setFillPatternScaleY(nodeHeight / imageHeight);
         this._.kImage.setFillPatternOffsetX((imageWidth - nodeWidth) * 0.5);
       }
+      else if(this.fillMode === Image.Pad) {
+        this._.kImage.setWidth(Math.min(imageWidth, nodeWidth));
+        this._.kImage.setHeight(Math.min(imageHeight, nodeHeight));
+        // TODO: Offset base and h/v align
+      }
     }
 
     this.draw();
