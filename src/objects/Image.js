@@ -72,11 +72,21 @@ QObjects.Image = {
         var scale;
         if(rX < rY) {
           scale = rX;
-          position.y = 0.5 * (nodeHeight - naturalHeight * scale);
+          if(this.verticalAlignment !== Image.AlignTop) {
+            position.y = nodeHeight - naturalHeight * scale;
+            if(this.verticalAlignment === Image.AlignVCenter) {
+              position.y *= 0.5;
+            }
+          }
         }
         else {
           scale = rY;
-          position.x = 0.5 * (nodeWidth - naturalWidth * scale);
+          if(this.horizontalAlignment !== Image.AlignLeft) {
+            position.x = nodeWidth - naturalWidth * scale;
+            if(this.horizontalAlignment === Image.AlignHCenter) {
+              position.x *= 0.5;
+            }
+          }
         }
         size.width = naturalWidth * scale;
         size.height = naturalHeight * scale;
@@ -143,7 +153,7 @@ Object.defineProperties(QObjects.Image, {
       // changing the value will have no effect besides signals and bindings.
       cache: true,
       fillMode: Image.Stretch,
-      //horizontalAlignment: enumeration,
+      horizontalAlignment: Image.AlignHCenter,
       //mirror: false,
       //paintedHeight: real,
       //paintedWidth: real,
@@ -162,10 +172,10 @@ Object.defineProperties(QObjects.Image, {
             this._.nextSource(v);
           }
         }
-      }
+      },
       //sourceSize: QSize,
       //status: enumeration,
-      //verticalAlignment: enumeration
+      verticalAlignment: Image.AlignVCenter
     }
   }
 });
