@@ -82,6 +82,14 @@ QObjects.Image = {
         size.width = naturalWidth * scale;
         size.height = naturalHeight * scale;
       }
+
+      if(this.mirror) {
+        position.x += size.width;
+        this._.kImage.setScaleX(-1);
+      }
+      else {
+        this._.kImage.setScaleX(1);
+      }
     }
     else {
       this._.kImage.setImage(null);
@@ -134,6 +142,11 @@ QObjects.Image = {
           }
           break;
       }
+
+      if(this.mirror) {
+        patternOffset.x += size.width / patternScale.x;
+        patternScale.x *= -1;
+      }
     }
 
     this._.kImage.setPosition(position);
@@ -168,7 +181,7 @@ Object.defineProperties(QObjects.Image, {
       cache: true,
       fillMode: Image.Stretch,
       horizontalAlignment: Image.AlignHCenter,
-      //mirror: false,
+      mirror: false,
       //paintedHeight: real,
       //paintedWidth: real,
       //progress: real,
