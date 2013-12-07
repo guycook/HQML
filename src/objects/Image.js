@@ -102,11 +102,11 @@ QObjects.Image = {
           break;
         case Image.TileVertically:
           patternScale.x = rX;
-          patternOffset.y = 0.5 * (naturalHeight - nodeHeight);
+          patternOffset.y = QObjects.Image.align[this.verticalAlignment] * (naturalHeight - nodeHeight);
           break;
         case Image.TileHorizontally:
           patternScale.y = rY;
-          patternOffset.x = 0.5 * (naturalWidth - nodeWidth);
+          patternOffset.x = QObjects.Image.align[this.horizontalAlignment] * (naturalWidth - nodeWidth);
           break;
         case Image.Pad:
           size.width = Math.min(naturalWidth, nodeWidth);
