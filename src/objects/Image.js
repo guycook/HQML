@@ -187,7 +187,9 @@ Object.defineProperties(QObjects.Image, {
       fillMode: Image.Stretch,
       horizontalAlignment: Image.AlignHCenter,
       mirror: false,
-      //smooth: bool,
+      // TODO: Implement scaling algorithm switch
+      //       Best approach may be to submit patch to kineticjs
+      smooth: true,
       source: {
         read: function() {
           return this._.activeSource();
@@ -202,7 +204,13 @@ Object.defineProperties(QObjects.Image, {
           }
         }
       },
-      //sourceSize: QSize,
+      // Writing to sourceSize has no effect in HQML, image memory managment
+      // is left to the browser
+      // TODO: Make this a QML size object
+      sourceSize: {
+        width: 0,
+        height: 0
+      },
       verticalAlignment: Image.AlignVCenter
     }
   },
