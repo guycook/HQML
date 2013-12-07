@@ -67,6 +67,7 @@ QObjects.Image = {
     if(this.fillMode === Image.Stretch || this.fillMode === Image.PreserveAspectFit) {
       this._.kImage.setFillPatternImage(null);
       this._.kImage.setImage(this._.domImage);
+
       if(this.fillMode === Image.PreserveAspectFit) {
         // Set the size of kImage to fit inside kNode
         var scale;
@@ -85,11 +86,13 @@ QObjects.Image = {
     else {
       this._.kImage.setImage(null);
       this._.kImage.setFillPatternImage(this._.domImage);
+
       switch(this.fillMode) {
         case Image.Tile:
           patternOffset.x = QObjects.Image.align[this.horizontalAlignment] * (naturalWidth - nodeWidth);
           patternOffset.y = QObjects.Image.align[this.verticalAlignment] * (naturalHeight - nodeHeight);
           break;
+
         case Image.PreserveAspectCrop:
           if(rX < rY) {
             patternScale.x = patternScale.y = rY;
@@ -100,19 +103,35 @@ QObjects.Image = {
             patternOffset.y = QObjects.Image.align[this.verticalAlignment] * (nodeWidth - nodeHeight) / rX;
           }
           break;
+
         case Image.TileVertically:
           patternScale.x = rX;
           patternOffset.y = QObjects.Image.align[this.verticalAlignment] * (naturalHeight - nodeHeight);
           break;
+
         case Image.TileHorizontally:
           patternScale.y = rY;
           patternOffset.x = QObjects.Image.align[this.horizontalAlignment] * (naturalWidth - nodeWidth);
           break;
-        case Image.Pad:
-          size.width = Math.min(naturalWidth, nodeWidth);
-          size.height = Math.min(naturalHeight, nodeHeight);
 
-          // TODO: Offset base and h/v align
+        case Image.Pad:
+          if(nodeWidth > naturalWidth) {
+            size.width = naturalWidth;
+            position.x = QObjects.Image.align[this.horizontalAlignment] * (nodeWidth - naturalWidth);
+          }
+          else {
+            size.width = nodeWidth;
+            patternOffset.x = QObjects.Image.align[this.horizontalAlignment] * (naturalWidth - nodeWidth);
+          }
+
+          if(nodeHeight > naturalHeight) {
+            size.height = naturalHeight;
+            position.y = QObjects.Image.align[this.verticalAlignment] * (nodeHeight - naturalHeight);
+          }
+          else {
+            size.height = nodeHeight;
+            patternOffset.y = QObjects.Image.align[this.verticalAlignment] * (naturalHeight - nodeHeight);
+          }
           break;
       }
     }
