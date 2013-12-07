@@ -72,21 +72,11 @@ QObjects.Image = {
         var scale;
         if(rX < rY) {
           scale = rX;
-          if(this.verticalAlignment !== Image.AlignTop) {
-            position.y = nodeHeight - naturalHeight * scale;
-            if(this.verticalAlignment === Image.AlignVCenter) {
-              position.y *= 0.5;
-            }
-          }
+          position.y = QObjects.Image.align[this.verticalAlignment] * (nodeHeight - naturalHeight * scale);
         }
         else {
           scale = rY;
-          if(this.horizontalAlignment !== Image.AlignLeft) {
-            position.x = nodeWidth - naturalWidth * scale;
-            if(this.horizontalAlignment === Image.AlignHCenter) {
-              position.x *= 0.5;
-            }
-          }
+          position.x = QObjects.Image.align[this.horizontalAlignment] * (nodeWidth - naturalWidth * scale);
         }
         size.width = naturalWidth * scale;
         size.height = naturalHeight * scale;
