@@ -41,6 +41,9 @@ QObjects.Image = {
     });
     this._.nextSource.valueHasMutated();
 
+    // Control observable allowing read-only properties to re-evaluate after update
+    this._.updated = ko.observable();
+
     this.update();
   },
   update: function() {
@@ -154,6 +157,8 @@ QObjects.Image = {
     this._.kImage.setFillPatternScale(patternScale);
     this._.kImage.setFillPatternOffset(patternOffset);
 
+    this._.updated.valueHasMutated();
+
     this.draw();
   },
   draw: function() {
@@ -182,8 +187,6 @@ Object.defineProperties(QObjects.Image, {
       fillMode: Image.Stretch,
       horizontalAlignment: Image.AlignHCenter,
       mirror: false,
-      //paintedHeight: real,
-      //paintedWidth: real,
       //progress: real,
       //smooth: bool,
       source: {
@@ -203,6 +206,18 @@ Object.defineProperties(QObjects.Image, {
       //sourceSize: QSize,
       //status: enumeration,
       verticalAlignment: Image.AlignVCenter
+    }
+  },
+  readOnly: {
+    value: {
+      paintedWidth: function() {
+        this._.updated();
+        return this._.kImage.getWidth();
+      },
+      paintedHeight: function() {
+        this._.updated();
+        return this._.kImage.getHeight();
+      }
     }
   }
 });
