@@ -102,12 +102,12 @@ QObjects.Image = {
           break;
         case Image.PreserveAspectCrop:
           if(rX < rY) {
-            patternOffset.x = 0.5 * (nodeHeight - nodeWidth) / rY;
             patternScale.x = patternScale.y = rY;
+            patternOffset.x = QObjects.Image.align[this.horizontalAlignment] * (nodeHeight - nodeWidth) / rY;
           }
           else {
-            patternOffset.y = 0.5 * (nodeWidth - nodeHeight) / rX;
             patternScale.x = patternScale.y = rX;
+            patternOffset.y = QObjects.Image.align[this.verticalAlignment] * (nodeWidth - nodeHeight) / rX;
           }
           break;
         case Image.TileVertically:
@@ -138,6 +138,11 @@ QObjects.Image = {
     this.parent.draw();
   }
 };
+
+QObjects.Image.align = {};
+QObjects.Image.align[Image.AlignLeft] = QObjects.Image.align[Image.AlignTop] = 0;
+QObjects.Image.align[Image.AlignHCenter] = QObjects.Image.align[Image.AlignVCenter] = 0.5;
+QObjects.Image.align[Image.AlignRight] = QObjects.Image.align[Image.AlignBottom] = 1;
 
 Object.defineProperties(QObjects.Image, {
   inherits: {
