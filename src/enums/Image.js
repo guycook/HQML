@@ -12,5 +12,9 @@ addEnums(window.Image, {
   Tile: 3,
   TileVertically: 4,
   TileHorizontally: 5,
-  Pad: 6
+  Pad: 6,
+  Null: 0,
+  Ready: 1,
+  Loading: 2,
+  Error: 3
 });
