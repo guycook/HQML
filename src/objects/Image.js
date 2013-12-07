@@ -87,8 +87,8 @@ QObjects.Image = {
       this._.kImage.setFillPatternImage(this._.domImage);
       switch(this.fillMode) {
         case Image.Tile:
-          patternOffset.x = 0.5 * (naturalWidth - nodeWidth);
-          patternOffset.y = 0.5 * (naturalHeight - nodeHeight);
+          patternOffset.x = QObjects.Image.align[this.horizontalAlignment] * (naturalWidth - nodeWidth);
+          patternOffset.y = QObjects.Image.align[this.verticalAlignment] * (naturalHeight - nodeHeight);
           break;
         case Image.PreserveAspectCrop:
           if(rX < rY) {
