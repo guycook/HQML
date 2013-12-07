@@ -54,68 +54,73 @@ QObjects.Image = {
 
     var nodeWidth = this._.kNode.getWidth(),
         nodeHeight = this._.kNode.getHeight(),
-        imageWidth = this._.domImage.naturalWidth,
-        imageHeight = this._.domImage.naturalHeight;
+        naturalWidth = this._.domImage.naturalWidth,
+        naturalHeight = this._.domImage.naturalHeight,
+        rX = nodeWidth / naturalWidth,
+        rY = nodeHeight / naturalHeight;
 
-    // TODO: Store the to-be-set values in a var and set them once at the end
-    this._.kImage.setX(0);
-    this._.kImage.setY(0);
-    this._.kImage.setWidth(nodeWidth);
-    this._.kImage.setHeight(nodeHeight);
-    this._.kImage.setFillPatternScale([1, 1]);
-    this._.kImage.setFillPatternOffset([0, 0]);
+    var position = { x: 0, y: 0 },
+        size = { width: nodeWidth, height: nodeHeight },
+        patternScale = { x: 1, y: 1 },
+        patternOffset = { x: 0, y: 0 };
 
-    if(this.fillMode === Image.Stretch || this.fillMode == Image.PreserveAspectFit) {
+    if(this.fillMode === Image.Stretch || this.fillMode === Image.PreserveAspectFit) {
       this._.kImage.setFillPatternImage(null);
       this._.kImage.setImage(this._.domImage);
       if(this.fillMode === Image.PreserveAspectFit) {
         // Set the size of kImage to fit inside kNode
-        var scale = 1, rX = nodeWidth / imageWidth, rY = nodeHeight / imageHeight;
+        var scale;
         if(rX < rY) {
           scale = rX;
-          this._.kImage.setY((nodeHeight - imageHeight * scale) * 0.5);
+          position.y = 0.5 * (nodeHeight - naturalHeight * scale);
         }
         else {
           scale = rY;
-          this._.kImage.setX((nodeWidth - imageWidth * scale) * 0.5);
+          position.x = 0.5 * (nodeWidth - naturalWidth * scale);
         }
-        this._.kImage.setWidth(imageWidth * scale);
-        this._.kImage.setHeight(imageHeight * scale);
+        size.width = naturalWidth * scale;
+        size.height = naturalHeight * scale;
       }
     }
     else {
       this._.kImage.setImage(null);
       this._.kImage.setFillPatternImage(this._.domImage);
-      if(this.fillMode === Image.Tile) {
-        // Pattern needs to be offset to fill about the centre
-        this._.kImage.setFillPatternOffset([-0.5 * (nodeWidth - imageWidth), -0.5 * (nodeHeight - imageHeight)]);
-      }
-      else if(this.fillMode === Image.PreserveAspectCrop) {
-        var scale = 1, rX = nodeWidth / imageWidth, rY = nodeHeight / imageHeight;
-        if(rX < rY) {
-          scale = rY;
-          this._.kImage.setFillPatternOffsetX((nodeHeight - nodeWidth) * 0.5 / scale);
-        }
-        else {
-          scale = rX;
-          this._.kImage.setFillPatternOffsetY((nodeWidth - nodeHeight) * 0.5 / scale);
-        }
-        this._.kImage.setFillPatternScale(scale);
-      }
-      else if(this.fillMode === Image.TileVertically) {
-        this._.kImage.setFillPatternScaleX(nodeWidth / imageWidth);
-        this._.kImage.setFillPatternOffsetY((imageHeight - nodeHeight) * 0.5);
-      }
-      else if(this.fillMode === Image.TileHorizontally) {
-        this._.kImage.setFillPatternScaleY(nodeHeight / imageHeight);
-        this._.kImage.setFillPatternOffsetX((imageWidth - nodeWidth) * 0.5);
-      }
-      else if(this.fillMode === Image.Pad) {
-        this._.kImage.setWidth(Math.min(imageWidth, nodeWidth));
-        this._.kImage.setHeight(Math.min(imageHeight, nodeHeight));
-        // TODO: Offset base and h/v align
+      switch(this.fillMode) {
+        case Image.Tile:
+          patternOffset.x = 0.5 * (naturalWidth - nodeWidth);
+          patternOffset.y = 0.5 * (naturalHeight - nodeHeight);
+          break;
+        case Image.PreserveAspectCrop:
+          if(rX < rY) {
+            patternOffset.x = 0.5 * (nodeHeight - nodeWidth) / rY;
+            patternScale.x = patternScale.y = rY;
+          }
+          else {
+            patternOffset.y = 0.5 * (nodeWidth - nodeHeight) / rX;
+            patternScale.x = patternScale.y = rX;
+          }
+          break;
+        case Image.TileVertically:
+          patternScale.x = rX;
+          patternOffset.y = 0.5 * (naturalHeight - nodeHeight);
+          break;
+        case Image.TileHorizontally:
+          patternScale.y = rY;
+          patternOffset.x = 0.5 * (naturalWidth - nodeWidth);
+          break;
+        case Image.Pad:
+          size.width = Math.min(naturalWidth, nodeWidth);
+          size.height = Math.min(naturalHeight, nodeHeight);
+
+          // TODO: Offset base and h/v align
+          break;
       }
     }
+
+    this._.kImage.setPosition(position);
+    this._.kImage.setSize(size);
+    this._.kImage.setFillPatternScale(patternScale);
+    this._.kImage.setFillPatternOffset(patternOffset);
 
     this.draw();
   },
