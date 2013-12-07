@@ -187,7 +187,6 @@ Object.defineProperties(QObjects.Image, {
       fillMode: Image.Stretch,
       horizontalAlignment: Image.AlignHCenter,
       mirror: false,
-      //progress: real,
       //smooth: bool,
       source: {
         read: function() {
@@ -204,7 +203,6 @@ Object.defineProperties(QObjects.Image, {
         }
       },
       //sourceSize: QSize,
-      //status: enumeration,
       verticalAlignment: Image.AlignVCenter
     }
   },
@@ -217,6 +215,21 @@ Object.defineProperties(QObjects.Image, {
       paintedHeight: function() {
         this._.updated();
         return this._.kImage.getHeight();
+      },
+      progress: function() {
+        // Currently can only show 0 or 1 as total progress.
+        // We could do better by either fetching image data with ajax
+        // or just wait for progress events to be available for images.
+        return this.status === Image.Ready ? 1 : 0;
+      },
+      status: function() {
+        if(this._.activeSource() === this._.nextSource()) {
+          if(this._.activeSource() === null) {
+            return Image.Null;
+          }
+          return this._.domImage.complete ? Image.Ready : Image.Error;
+        }
+        return Image.Loading;
       }
     }
   }
