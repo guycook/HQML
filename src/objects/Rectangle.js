@@ -30,6 +30,20 @@ QObjects.Rectangle = {
       this._.kRect.setStroke(this.border.color);
     }
 
+    if(nullOrUndefined(this.gradient) || nullOrUndefined(this.gradient.stops)) {
+      this._.kRect.setFillPriority('color');
+    }
+    else {
+      this._.kRect.setFillLinearGradientStartPoint([0, 0]);
+      this._.kRect.setFillLinearGradientEndPoint([0, this._.kRect.getHeight()]);
+      var stopArray = [];
+      for(var i = 0; i < this.gradient.stops.length; i++) {
+        stopArray.push(this.gradient.stops[i].position, this.gradient.stops[i].color);
+      }
+      this._.kRect.setFillLinearGradientColorStops(stopArray);
+      this._.kRect.setFillPriority('linear-gradient');
+    }
+
     this.draw();
   },
   draw: function() {
