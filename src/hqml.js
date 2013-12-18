@@ -204,6 +204,8 @@ HQML.runParsed = function(container, ast) {
   });
 
   for(var i = 0; i < initQueue.length; i++) {
-    initQueue[i].init();
+    if(initQueue[i].init) {
+      initQueue[i].init();
+    }
   }
 };
