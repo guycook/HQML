@@ -88,9 +88,20 @@ QPropertyValue // TODO: Could be literal, function, block, qobject or expression
   = d:Literal EOS { return d; }
   / d:$Statement { return { type: "Expression", value: d }; }
   / d:QObject { return { type: "QObject", value: d }; }
+  / d:QMLList { return { type: "List", value: d }; }
 
 QIdentifier
   = $(Identifier / ".")+
+
+QMLList
+  = "[" __ elements:QMLListElements? __ "]" { return elements ? elements : []; }
+
+QMLListElements
+  = head:QObject tail:(__ "," __ d:QObject { return d; })* {
+      if(!tail) tail = [];
+      tail.unshift(head);
+      return tail;
+    }
 
 QFunctionDeclaration
   = FunctionToken __ name:Identifier __
