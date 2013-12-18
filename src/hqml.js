@@ -4,6 +4,8 @@ var QObjects = {};
 
 var initQueue = [];
 
+// TODO: Don't use implicit 'children' property on objects, instead force
+//       objects to declare their 'default' property which children will be assigned to
 QObjects.create = function(config) {
   var type = config.type,
       attr = config.attributes,
@@ -98,7 +100,8 @@ QObjects.addProperties = function(context, obj, propList, attr, prefix) {
   }
 
   for(var prop in propList) {
-    if(propList[prop] && typeof propList[prop] === 'object' && typeof propList[prop].read !== 'function') {
+    // TODO: Tidy
+    if(propList[prop] && typeof propList[prop] === 'object' && typeof propList[prop].read !== 'function' && !Array.isArray(propList[prop])) {
       // Created nested object for QML properties with '.' in the name
       obj[prop] = {};
       QObjects.addProperties(context, obj[prop], propList[prop], attr, prefix + prop + '.');
@@ -106,12 +109,25 @@ QObjects.addProperties = function(context, obj, propList, attr, prefix) {
     }
 
     // Create a computed if attribute type is an expression
-    var isExpression = getProperty(attr, prefix + prop, 'name', 'type') === 'Expression',
+    var type = getProperty(attr, prefix + prop, 'name', 'type'),
         value = getProperty(attr, prefix + prop, 'name', 'value');
-    if(isExpression) {
+
+    if(type === 'Expression') {
       QObjects.addExpressionProperty(obj, prop, value, context);
     }
     else {
+      // Initialise objects and lists
+      if(type === 'QObject') {
+        value = QObjects.create(value);
+        initQueue.unshift(value);
+      }
+      else if(type === 'List') {
+        for(var i = 0; i < value.length; i++) {
+          value[i] = QObjects.create(value[i]);
+          initQueue.unshift(value[i]);
+        }
+      }
+
       // Does this property have special read/write semantics?
       // TODO: Somehow combine this with expressions above
       if(propList[prop] && typeof propList[prop] === 'object' && typeof propList[prop].read === 'function') {
