@@ -8,7 +8,7 @@ var initQueue = [];
 //       objects to declare their 'default' property which children will be assigned to
 QObjects.create = function(config) {
   var type = config.type,
-      attr = config.attributes,
+      attr = config.attributes || [],
       children = config.children || [];
 
   if(!(type in QObjects)) {
