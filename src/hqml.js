@@ -22,8 +22,16 @@ QObjects.create = function(config) {
       type: QObjects[type].inherits,
       attributes: attr
     });
+
     for(var func in QObjects[type]) {
       obj[func] = QObjects[type][func];
+    }
+
+    if(!nullOrUndefined(QObjects[type]._default)) {
+      obj._default = {
+        name: QObjects[type]._default.name,
+        type: QObjects[type]._default.type
+      };
     }
   }
   else {
@@ -79,13 +87,23 @@ QObjects.create = function(config) {
   }
 
   // Create children, attach and put at front of init queue
-  obj.children = [];
-  for(var i = 0; i < children.length; i++) {
-    var child = QObjects.create(children[i]);
-    child.parent = obj;
-    obj.children.push(child);
+  if(children.length) {
+    if(obj._default.type === 'list') {
+      obj[obj._default.name] = [];
+      for(var i = 0; i < children.length; i++) {
+        var child = QObjects.create(children[i]);
+        // TODO: Perhaps this relation should be created in the parent's init function
+        //       ie. Item.init iterates over item.data setting each child's parent to this
+        child.parent = obj;
+        obj[obj._default.name].push(child);
+      }
+      initQueue = obj[obj._default.name].concat(initQueue);
+    }
+    else {
+      obj[obj._default.name] = QObjects.create(children[0]);
+      initQueue.unshift(obj[obj._default.name]);
+    }
   }
-  initQueue = obj.children.concat(initQueue);
 
   return obj;
 };

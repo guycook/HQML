@@ -53,8 +53,16 @@ QObjects.Item = {
 };
 
 Object.defineProperties(QObjects.Item, {
+  _default: {
+    value: {
+      name: 'data',
+      type: 'list'
+    },
+    writable: true
+  },
   defaultProperties: {
     value: {
+      data: [],
       x: 0,
       y: 0,
       width: 0,
