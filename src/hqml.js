@@ -4,8 +4,6 @@ var QObjects = {};
 
 var initQueue = [];
 
-// TODO: Don't use implicit 'children' property on objects, instead force
-//       objects to declare their 'default' property which children will be assigned to
 QObjects.create = function(config) {
   var type = config.type,
       attr = config.attributes || [],
