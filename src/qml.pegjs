@@ -39,7 +39,7 @@ QObject
 QDefinitionList
   = head:QDefinition tail:(__ d:QDefinition { return d; })* {
       var definitions = {};
-      tail.push(head);
+      tail.unshift(head);
       for (var i = 0; i < tail.length; i++) {
         if(definitions[tail[i].type]) {
           definitions[tail[i].type].push(tail[i].value);
