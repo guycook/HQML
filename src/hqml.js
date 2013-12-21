@@ -235,9 +235,12 @@ HQML.runParsed = function(container, ast) {
       // TODO: init/parent assignment should be done by QObjects.create at end of inheritance chain
   });
 
-  for(var i = 0; i < initQueue.length; i++) {
-    if(initQueue[i].init) {
-      initQueue[i].init();
+  var importer = new Import(ast.imports, HQML.context, function() {
+    for(var i = 0; i < initQueue.length; i++) {
+      if(initQueue[i].init) {
+        initQueue[i].init();
+      }
     }
-  }
+  });
+  importer.applyAll();
 };
