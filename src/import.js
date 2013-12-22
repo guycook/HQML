@@ -42,6 +42,7 @@ Import.prototype.applyAll = function() {
   });
 
   this.completeCount = this.list.length - jsImports.length; // TODO: Remove
+  if(this.completeCount === this.list.length) this.onFinished(); // TODO: Remove
 
   jsImports.forEach(this.importJs.bind(this));
 };
