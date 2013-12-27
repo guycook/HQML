@@ -1,4 +1,5 @@
 var HQML = window.HQML || (window.HQML = {});
+HQML.environment = {};
 HQML.context = {};
 var QObjects = {};
 
@@ -59,7 +60,7 @@ QObjects.create = function(config) {
 
       Object.defineProperty(obj, handleProperty, {
         set: function(v) {
-          this[signal] = (new Function("_this", "_context", "with(_context){with(_this){" + v + "}}")).bind(this, this, HQML.context);
+          this[signal] = (new Function("_environment", "_context", "with(_environment){ with(_context){ with(this){ " + v + " }}}")).bind(this, HQML.environment, HQML.context);
         }
       });
       if(handler) obj[handleProperty] = handler;
@@ -174,7 +175,7 @@ QObjects.addProperties = function(context, obj, propList, attr, prefix) {
 QObjects.addExpressionProperty = function(obj, prop, expr, context) {
   obj._[prop] = ko.computed({
     // Provide the owning object as both 'this' and make its properties available through 'with'
-    read: (new Function("_this", "_context", "with(_context){with(_this){return " + expr + "}}")).bind(context, context, HQML.context),
+    read: (new Function("_environment", "_context", "with(_environment){ with(_context){ with(this){ return " + expr + " }}}")).bind(context, HQML.environment, HQML.context),
     // Write function kills this computed and replaces it with an observable
     // TODO: Adding computed expressions at runtime must be done via Qt.binding
     write: function(v) {

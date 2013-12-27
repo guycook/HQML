@@ -47,6 +47,8 @@ QObjects.Image = {
     this.update();
   },
   update: function() {
+    var Image = HQML.environment.Image;
+
     if(nullOrUndefined(this._.activeSource()) || !this._.activeSource().length) {
       // TODO: Detach image from group and redraw
       console.log('no image');
@@ -167,9 +169,9 @@ QObjects.Image = {
 };
 
 QObjects.Image.align = {};
-QObjects.Image.align[Image.AlignLeft] = QObjects.Image.align[Image.AlignTop] = 0;
-QObjects.Image.align[Image.AlignHCenter] = QObjects.Image.align[Image.AlignVCenter] = 0.5;
-QObjects.Image.align[Image.AlignRight] = QObjects.Image.align[Image.AlignBottom] = 1;
+QObjects.Image.align[HQML.environment.Image.AlignLeft] = QObjects.Image.align[HQML.environment.Image.AlignTop] = 0;
+QObjects.Image.align[HQML.environment.Image.AlignHCenter] = QObjects.Image.align[HQML.environment.Image.AlignVCenter] = 0.5;
+QObjects.Image.align[HQML.environment.Image.AlignRight] = QObjects.Image.align[HQML.environment.Image.AlignBottom] = 1;
 
 Object.defineProperties(QObjects.Image, {
   inherits: {
@@ -184,8 +186,8 @@ Object.defineProperties(QObjects.Image, {
       // The caching behaviour of Images will be determined by browser settings,
       // changing the value will have no effect besides signals and bindings.
       cache: true,
-      fillMode: Image.Stretch,
-      horizontalAlignment: Image.AlignHCenter,
+      fillMode: HQML.environment.Image.Stretch,
+      horizontalAlignment: HQML.environment.Image.AlignHCenter,
       mirror: false,
       // TODO: Implement scaling algorithm switch
       //       Best approach may be to submit patch to kineticjs
@@ -211,7 +213,7 @@ Object.defineProperties(QObjects.Image, {
         width: 0,
         height: 0
       },
-      verticalAlignment: Image.AlignVCenter
+      verticalAlignment: HQML.environment.Image.AlignVCenter
     }
   },
   readOnly: {
@@ -228,16 +230,16 @@ Object.defineProperties(QObjects.Image, {
         // Currently can only show 0 or 1 as total progress.
         // We could do better by either fetching image data with ajax
         // or just wait for progress events to be available for images.
-        return this.status === Image.Ready ? 1 : 0;
+        return this.status === HQML.environment.Image.Ready ? 1 : 0;
       },
       status: function() {
         if(this._.activeSource() === this._.nextSource()) {
           if(this._.activeSource() === null) {
-            return Image.Null;
+            return HQML.environment.Image.Null;
           }
-          return this._.domImage.complete ? Image.Ready : Image.Error;
+          return this._.domImage.complete ? HQML.environment.Image.Ready : HQML.environment.Image.Error;
         }
-        return Image.Loading;
+        return HQML.environment.Image.Loading;
       }
     }
   }

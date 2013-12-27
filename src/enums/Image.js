@@ -1,5 +1,5 @@
-window.Image = window.Image || {};
-addEnums(window.Image, {
+HQML.environment.Image = {};
+addEnums(HQML.environment.Image, {
   AlignLeft: 1,
   AlignRight: 2,
   AlignHCenter: 4,
