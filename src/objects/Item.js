@@ -45,6 +45,13 @@ QObjects.Item = {
         x = this.anchors.right - width - (+this.anchors.rightMargin);
       }
     }
+
+    // Update internal absolute positioning if affected by anchors
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+
     node.setX(x + border / 2);
     node.setY(y + border / 2);
     node.setWidth(width - border);
