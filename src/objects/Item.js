@@ -9,6 +9,12 @@ QObjects.Item = {
         height = this.height,
         border = nullOrUndefined(this.border) ? 0 : this.border.width;
 
+    if(!nullOrUndefined(this.anchors.fill)) {
+      ['left', 'top', 'right', 'bottom'].forEach(function(side) {
+        this.anchors[side] = this.anchors.fill[side];
+      }, this);
+    }
+
     // Centre horizontally and vertically if required
     if(!nullOrUndefined(this.anchors.horizontalCenter)) {
       x = this.anchors.horizontalCenter - (width * 0.5) + (+this.anchors.horizontalCenterOffset);
