@@ -22,38 +22,56 @@ QObjects.Item = {
 
     // Centre horizontally and vertically if required
     if(!nullOrUndefined(this.anchors.horizontalCenter)) {
-      x = this.anchors.horizontalCenter - (width * 0.5) + (+this.anchors.horizontalCenterOffset);
+      var hCenter = this.anchors.horizontalCenter.item === this.parent ?
+          this.parent.width * 0.5 :
+          this.anchors.horizontalCenter.position;
+      x = hCenter - (width * 0.5) + (+this.anchors.horizontalCenterOffset);
       if(this.anchors.alignWhenCentered) {
         x = Math.round(x);
       }
     }
     if(!nullOrUndefined(this.anchors.verticalCenter)) {
-      y = this.anchors.verticalCenter - (height * 0.5) + (+this.anchors.verticalCenterOffset);
+      var vCenter = this.anchors.verticalCenter.item === this.parent ?
+          this.parent.height * 0.5 :
+          this.anchors.verticalCenter.position;
+      y = vCenter - (height * 0.5) + (+this.anchors.verticalCenterOffset);
       if(this.anchors.alignWhenCentered) {
         y = Math.round(y);
       }
     }
 
     if(!nullOrUndefined(this.anchors.top)) {
-      y = this.anchors.top + (+this.anchors.topMargin);
+      y = this.anchors.top.position + (+this.anchors.topMargin);
+      if(this.anchors.top.item === this.parent) {
+        y = +this.anchors.topMargin;
+      }
     }
     if(!nullOrUndefined(this.anchors.bottom)) {
+      var bAnchor = this.anchors.bottom.item === this.parent ?
+          this.parent.height :
+          this.anchors.bottom.position;
       if(!nullOrUndefined(this.anchors.top)) {
-        height = this.anchors.bottom - y - (+this.anchors.bottomMargin);
+        height = bAnchor - y - (+this.anchors.bottomMargin);
       }
       else {
-        y = this.anchors.bottom - height - (+this.anchors.bottomMargin);
+        y = bAnchor - height - (+this.anchors.bottomMargin);
       }
     }
     if(!nullOrUndefined(this.anchors.left)) {
-      x = this.anchors.left + (+this.anchors.leftMargin);
+      x = this.anchors.left.position + (+this.anchors.leftMargin);
+      if(this.anchors.left.item === this.parent) {
+        x = +this.anchors.leftMargin;
+      }
     }
     if(!nullOrUndefined(this.anchors.right)) {
+      var rAnchor = this.anchors.right.item === this.parent ?
+          this.parent.width :
+          this.anchors.right.position;
       if(!nullOrUndefined(this.anchors.left)) {
-        width = this.anchors.right - x - (+this.anchors.rightMargin);
+        width = rAnchor - x - (+this.anchors.rightMargin);
       }
       else {
-        x = this.anchors.right - width - (+this.anchors.rightMargin);
+        x = rAnchor - width - (+this.anchors.rightMargin);
       }
     }
 
@@ -116,13 +134,13 @@ Object.defineProperties(QObjects.Item, {
   },
   readOnly: {
     value: {
-      top: function() { return this.y; },
-      verticalCenter: function() { return this.y + Math.floor(this.height * 0.5); },
-      bottom: function() { return this.y + this.height; },
-      left: function() { return this.x; },
-      horizontalCenter: function() { return this.x + Math.floor(this.width * 0.5); },
-      right: function() { return this.x + this.width; },
-      baseline: function() { return this.y; }
+      top: function() { return { item: this, position: this.y }; },
+      verticalCenter: function() { return { item: this, position: this.y + Math.floor(this.height * 0.5) }; },
+      bottom: function() { return { item: this, position: this.y + this.height }; },
+      left: function() { return { item: this, position: this.x }; },
+      horizontalCenter: function() { return { item: this, position: this.x + Math.floor(this.width * 0.5) }; },
+      right: function() { return { item: this, position: this.x + this.width }; },
+      baseline: function() { return { item: this, position: this.y }; }
     }
   }
 });
