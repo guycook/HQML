@@ -15,6 +15,11 @@ QObjects.Item = {
       }, this);
     }
 
+    if(!nullOrUndefined(this.anchors.centerIn)) {
+      this.anchors.horizontalCenter = this.anchors.centerIn.horizontalCenter;
+      this.anchors.verticalCenter = this.anchors.centerIn.verticalCenter;
+    }
+
     // Centre horizontally and vertically if required
     if(!nullOrUndefined(this.anchors.horizontalCenter)) {
       x = this.anchors.horizontalCenter - (width * 0.5) + (+this.anchors.horizontalCenterOffset);
