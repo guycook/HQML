@@ -39,10 +39,10 @@ QObjects.Item = {
     }
     if(!nullOrUndefined(this.anchors.right)) {
       if(!nullOrUndefined(this.anchors.left)) {
-        width = this.anchors.right - x - +(this.anchors.rightMargin);
+        width = this.anchors.right - x - (+this.anchors.rightMargin);
       }
       else {
-        x = this.anchors.right - width - +(this.anchors.rightMargin);
+        x = this.anchors.right - width - (+this.anchors.rightMargin);
       }
     }
     node.setX(x + border / 2);
