@@ -2,6 +2,13 @@
 // QML Item
 QObjects.Item = {
   // TODO: Init function defining a layer, update which can move/resize it
+  offset: function() {
+    if(this.parent && this.parent.offset) {
+      var o = this.parent.offset();
+      return { x: this.x + o.x, y: this.y + o.y };
+    }
+    return { x: 0, y: 0 };
+  },
   layout: function(node) {
     var x = this.x,
         y = this.y,
