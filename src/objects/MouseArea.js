@@ -6,11 +6,34 @@ QObjects.MouseArea = {
     this._.kNode = new Kinetic.Rect();
 
     var self = this;
+
+    this._.accepted = false; // Is this event handled already?
+    this._.lastDown = 0; // For doubleClick
+
+    this._.kNode.on('mousedown.signal', function(kEvent) {
+      self._.accepted = false;
+    });
+
     this._.kNode.on('click.signal', function(kEvent) {
       var mouse = self.getMouseEvent(kEvent);
-      if(!nullOrUndefined(self.clicked) && self.enabled && (self.acceptedButtons & mouse.button)) {
+      if(!self._.accepted && self.enabled && (self.acceptedButtons & mouse.button)) {
         self.clicked(mouse);
-        // TODO: Deal with mouse.accepted state
+      }
+    });
+
+    // QML doubleClicked fires on the second mousedown based on time since last mousedown
+    this._.kNode.on('mousedown.signal', function(kEvent) {
+      var mouse = self.getMouseEvent(kEvent);
+      var now = Date.now();
+      if(/* TODO: self.doubleClicked._.slots.length && */ now - self._.lastDown < 500) {
+        if(!self._.accepted && self.enabled && (self.acceptedButtons & mouse.button)) {
+          self.doubleClicked(mouse);
+        }
+        self._.lastDown = 0;
+        self._.accepted = mouse.accepted;
+      }
+      else {
+        self._.lastDown = now;
       }
     });
 
@@ -94,7 +117,9 @@ Object.defineProperties(QObjects.MouseArea, {
   },
   signals: {
     value : {
-      clicked: ['mouse']
+      canceled: [], // TODO: Implement
+      clicked: ['mouse'],
+      doubleClicked: ['mouse']
     }
   }
 });
