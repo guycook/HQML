@@ -12,12 +12,20 @@ QObjects.MouseArea = {
 
     this._.kNode.on('mousedown.signal', function(kEvent) {
       self._.accepted = false;
+      // Without hoverEnabled 'entered' is fired on mousedown
+      if(self.enabled && !self.hoverEnabled) {
+        self.entered();
+      }
     });
 
     this._.kNode.on('click.signal', function(kEvent) {
       var mouse = self.getMouseEvent(kEvent);
       if(!self._.accepted && self.enabled && (self.acceptedButtons & mouse.button)) {
         self.clicked(mouse);
+      }
+      // Without hoverEnabled 'exited' is fired after 'clicked'
+      if(self.enabled && !self.hoverEnabled) {
+        self.exited();
       }
     });
 
@@ -34,6 +42,18 @@ QObjects.MouseArea = {
       }
       else {
         self._.lastDown = now;
+      }
+    });
+
+    this._.kNode.on('mouseenter.signal', function(kEvent) {
+      if(self.enabled && self.hoverEnabled) {
+        self.entered();
+      }
+    });
+
+    this._.kNode.on('mouseleave.signal', function(kEvent) {
+      if(self.enabled && self.hoverEnabled) {
+        self.exited();
       }
     });
 
@@ -119,7 +139,9 @@ Object.defineProperties(QObjects.MouseArea, {
     value : {
       canceled: [], // TODO: Implement
       clicked: ['mouse'],
-      doubleClicked: ['mouse']
+      doubleClicked: ['mouse'],
+      entered: [],
+      exited: []
     }
   }
 });
