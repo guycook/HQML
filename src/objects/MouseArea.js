@@ -11,11 +11,25 @@ QObjects.MouseArea = {
     this._.lastDown = 0; // For doubleClick
 
     this._.kNode.on('mousedown.signal', function(kEvent) {
+      self._.lastEvent = self.getMouseEvent(kEvent);
       self._.accepted = false;
-      // Without hoverEnabled 'entered' is fired on mousedown
-      if(self.enabled && !self.hoverEnabled) {
-        self.entered();
+      if(self.enabled) {
+        // Without hoverEnabled 'entered' is fired on mousedown
+        if(!self.hoverEnabled) {
+          self.entered();
+        }
+        // Start waiting for pressAndHold, can be canceled by mouseup or mouseleave
+        self._.holdTimer = setTimeout(function() {
+          if(true /* TODO: self.pressAndHold._.slots.length */) { // Prevent acceptance if no handler present
+            self.pressAndHold(self._.lastEvent);
+            self._.accepted = self._.lastEvent.accepted;
+          }
+        }, 800);
       }
+    });
+
+    this._.kNode.on('mouseup.signal', function(kEvent) {
+      clearTimeout(self._.holdTimer);
     });
 
     this._.kNode.on('click.signal', function(kEvent) {
@@ -30,7 +44,7 @@ QObjects.MouseArea = {
     });
 
     // QML doubleClicked fires on the second mousedown based on time since last mousedown
-    this._.kNode.on('mousedown.signal', function(kEvent) {
+    this._.kNode.on('mousedown.doubleClick', function(kEvent) {
       var mouse = self.getMouseEvent(kEvent);
       var now = Date.now();
       if(/* TODO: self.doubleClicked._.slots.length && */ now - self._.lastDown < 500) {
@@ -52,13 +66,14 @@ QObjects.MouseArea = {
     });
 
     this._.kNode.on('mouseleave.signal', function(kEvent) {
+      clearTimeout(self._.holdTimer);
       if(self.enabled && self.hoverEnabled) {
         self.exited();
       }
     });
 
     this._.kNode.on('mousemove.signal', function(kEvent) {
-      var mouse = self.getMouseEvent(kEvent);
+      var mouse = self._.lastEvent = self.getMouseEvent(kEvent);
       // TODO: Support for coordinates outside MouseArea on click and drag
       if(self.enabled && (self.hoverEnabled || mouse.buttons)) {
         self.positionChanged(mouse);
@@ -154,7 +169,8 @@ Object.defineProperties(QObjects.MouseArea, {
       doubleClicked: ['mouse'],
       entered: [],
       exited: [],
-      positionChanged: ['mouse']
+      positionChanged: ['mouse'],
+      pressAndHold: ['mouse']
     }
   }
 });
