@@ -57,6 +57,14 @@ QObjects.MouseArea = {
       }
     });
 
+    this._.kNode.on('mousemove.signal', function(kEvent) {
+      var mouse = self.getMouseEvent(kEvent);
+      // TODO: Support for coordinates outside MouseArea on click and drag
+      if(self.enabled && (self.hoverEnabled || mouse.buttons)) {
+        self.positionChanged(mouse);
+      }
+    });
+
     try {
       this.parent._.kNode.add(this._.kNode);
     }
@@ -141,7 +149,8 @@ Object.defineProperties(QObjects.MouseArea, {
       clicked: ['mouse'],
       doubleClicked: ['mouse'],
       entered: [],
-      exited: []
+      exited: [],
+      positionChanged: ['mouse']
     }
   }
 });
