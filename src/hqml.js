@@ -220,6 +220,11 @@ HQML.runParsed = function(container, ast) {
       });
       this._ = { kNode: new Kinetic.Layer() };
       stage.add(this._.kNode);
+
+      // Prevent context menu on canvas
+      stage.content.oncontextmenu = function() { return false; };
+
+      HQML.stage = stage;
     },
     draw: function() {
       this._.kNode.batchDraw();
