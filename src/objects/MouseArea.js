@@ -11,12 +11,19 @@ QObjects.MouseArea = {
     this._.lastDown = 0; // For doubleClick
 
     this._.kNode.on('mousedown.signal', function(kEvent) {
-      self._.lastEvent = self.getMouseEvent(kEvent);
+      var mouse = self._.lastEvent = self.getMouseEvent(kEvent);
       self._.accepted = false;
       if(self.enabled) {
         // Without hoverEnabled 'entered' is fired on mousedown
         if(!self.hoverEnabled) {
           self.entered();
+        }
+        if(true /* TODO: self.pressed._.slots.length */) {
+          self.pressed(mouse);
+          self._.accepted = !mouse.accepted; // Inverted accepted behaviour for pressed
+          if(self._.accepted) {
+            // TODO: Send events to any MouseArea directly below this one
+          }
         }
         // Start waiting for pressAndHold, can be canceled by mouseup or mouseleave
         self._.holdTimer = setTimeout(function() {
@@ -158,7 +165,9 @@ Object.defineProperties(QObjects.MouseArea, {
       containsMouse: function() { return false; }, // TODO: Implement
       mouseX: function() { return 0; }, // TODO: Implement
       mouseY: function() { return 0; }, // TODO: Implement
-      pressed: function() { return false; }, // TODO: Implement
+      // TODO: Figure out what to do with name collision between pressed property and signal
+      //       http://qt-project.org/forums/viewthread/36764/
+      //pressed: function() { return false; }, // TODO: Implement
       pressedButtons: function() { return null; } // TODO: Implement
     }
   },
@@ -170,7 +179,8 @@ Object.defineProperties(QObjects.MouseArea, {
       entered: [],
       exited: [],
       positionChanged: ['mouse'],
-      pressAndHold: ['mouse']
+      pressAndHold: ['mouse'],
+      pressed: ['mouse']
     }
   }
 });
