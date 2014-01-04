@@ -54,17 +54,21 @@ QObjects.create = function(config) {
   // Add signals
   // onSigname is a writable property which creates a bound function callable by signame
   if(!nullOrUndefined(QObjects[type].signals)) {
-    QObjects[type].signals.forEach(function(signal) {
+    for(var signal in QObjects[type].signals) {
       var handleProperty = 'on' + signal.charAt(0).toUpperCase() + signal.substr(1);
-      var handler = getProperty(attr, handleProperty, 'name', 'value');
+      var handler = getProperty(attr, handleProperty, 'name', 'value') || "";
 
-      Object.defineProperty(obj, handleProperty, {
-        set: function(v) {
-          this[signal] = (new Function("_environment", "_context", "with(_environment){ with(_context){ with(this){ " + v + " }}}")).bind(this, HQML.environment, HQML.context);
-        }
+      // This constructor allows for signals to be fired with arguments of specific (but arbitrary) names
+      var constructor = Function.bind.apply(Function, [null, "_environment", "_context"].concat(QObjects[type].signals[signal] || []));
+
+      // TODO: Add connect/disconnect methods to runSignal and private dispatch function called after handler
+      var runSignal = (new constructor("with(_environment){ with(_context){ with(this){ " + handler + " }}}")).bind(obj, HQML.environment, HQML.context);
+
+      // handleProperty is no longer available at runtime, and the signal property is read-only
+      Object.defineProperty(obj, signal, {
+        value: runSignal
       });
-      if(handler) obj[handleProperty] = handler;
-    });
+    }
   }
 
   // Add id and object to global context
