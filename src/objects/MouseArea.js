@@ -78,10 +78,14 @@ QObjects.MouseArea = {
   },
   getMouseEvent: function(kEvent) {
     var Qt = HQML.environment.Qt;
-    var mouse = HQML.stage.getPointerPosition();
+    // Even though getPointerPosition returns of object of just {x,y} it can't
+    // be used and modified directly as Kinetic caches the reference and reuses it
+    // for subsequent events
+    var pointer = HQML.stage.getPointerPosition();
+    var mouse = {};
     var offset = this.offset();
-    mouse.x -= offset.x;
-    mouse.y -= offset.y;
+    mouse.x = pointer.x - offset.x;
+    mouse.y = pointer.y - offset.y;
     mouse.accepted = true;
     switch(kEvent.button) {
       case 0:
