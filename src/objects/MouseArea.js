@@ -9,6 +9,7 @@ QObjects.MouseArea = {
 
     this._.accepted = false; // Is this event handled already?
     this._.lastDown = 0; // For doubleClick
+    this._.hasMouse = false;
 
     this._.kNode.on('mousedown.signal', function(kEvent) {
       var mouse = self._.lastEvent = self.getMouseEvent(kEvent);
@@ -67,12 +68,14 @@ QObjects.MouseArea = {
     });
 
     this._.kNode.on('mouseenter.signal', function(kEvent) {
+      self._.hasMouse = true;
       if(self.enabled && self.hoverEnabled) {
         self.entered();
       }
     });
 
     this._.kNode.on('mouseleave.signal', function(kEvent) {
+      self._.hasMouse = false;
       clearTimeout(self._.holdTimer);
       if(self.enabled && self.hoverEnabled) {
         self.exited();
@@ -86,6 +89,26 @@ QObjects.MouseArea = {
         self.positionChanged(mouse);
       }
     });
+
+    HQML.stage.content.addEventListener('wheel', function(event) {
+      if(self._.hasMouse && self.enabled) {
+        // TODO: The following is a dodgy hack to deal with parameter name colliding with signal name
+        //       Need to find a way around this
+        var wheel = self.wheel;
+        wheel.accepted = true;
+        // Firefox by default uses DOM_DELTA_LINE (1) instead of pixels
+        wheel.angleDelta = {
+          x: event.deltaX * (event.deltaMode === 1 ? 40 : 1),
+          y: -event.deltaY * (event.deltaMode === 1 ? 40 : 1) // QML wheel direction is reverse of browsers
+        }; // TODO: QPoint object
+        wheel.buttons = self._.lastEvent.buttons;
+        wheel.modifiers = self._.lastEvent.modifiers;
+        wheel.pixelDelta = { x: 0, y: 0 }; // Not supported on web // TODO: QPoint
+        wheel.x = self._.lastEvent.x;
+        wheel.y = self._.lastEvent.y;
+        self.wheel(wheel);
+      }
+    }, false);
 
     try {
       this.parent._.kNode.add(this._.kNode);
@@ -180,7 +203,8 @@ Object.defineProperties(QObjects.MouseArea, {
       exited: [],
       positionChanged: ['mouse'],
       pressAndHold: ['mouse'],
-      pressed: ['mouse']
+      pressed: ['mouse'],
+      wheel: ['wheel']
     }
   }
 });
