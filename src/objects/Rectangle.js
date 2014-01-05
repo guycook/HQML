@@ -1,8 +1,8 @@
-// TODO: Complete implementation / Document
-// QML Rectangle
+// QtQuick 2.0 Rectangle
+// http://qt-project.org/doc/qt-5.1/qtquick/qml-qtquick2-rectangle.html
+
 QObjects.Rectangle = {
   init: function() {
-    // TODO: Should this be group or layer? infer based on anim etc?
     this._.kNode = new Kinetic.Group();
     this._.kRect = new Kinetic.Rect();
     this._.kNode.add(this._.kRect);

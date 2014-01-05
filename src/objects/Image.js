@@ -1,5 +1,7 @@
 // TODO: Complete implementation / Document
-// QML Image
+// QtQuick 2.0 Image
+// http://qt-project.org/doc/qt-5.1/qtquick/qml-qtquick2-image.html
+
 QObjects.Image = {
   init: function() {
     // TODO: Should this be group or layer? infer based on anim etc?

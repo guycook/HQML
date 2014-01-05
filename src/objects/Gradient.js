@@ -1,4 +1,6 @@
-// QML Gradient
+// QtQuick 2.0 Gradient
+// http://qt-project.org/doc/qt-5.1/qtquick/qml-qtquick2-gradient.html
+
 QObjects.Gradient = {};
 
 Object.defineProperties(QObjects.Gradient, {

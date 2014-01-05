@@ -1,6 +1,7 @@
 // TODO: Complete implementation / Document
-// QML MouseArea
-// http://qt-project.org/doc/qt-5.0/qtquick/qml-qtquick2-mousearea.html
+// QtQuick 2.0 MouseArea
+// http://qt-project.org/doc/qt-5.1/qtquick/qml-qtquick2-mousearea.html
+
 QObjects.MouseArea = {
   init: function() {
     this._.kNode = new Kinetic.Rect();

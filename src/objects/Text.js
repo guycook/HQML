@@ -1,5 +1,7 @@
-// TODO: Complete implementation / Document
-// QML Text
+// QtQuick 2.0 Text
+// http://qt-project.org/doc/qt-5.1/qtquick/qml-qtquick2-text.html
+
+// TODO: Complete implementation
 QObjects.Text = {
   init: function() {
     this._.kText = new Kinetic.Text({});

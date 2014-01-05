@@ -1,5 +1,7 @@
-// TODO: Complete implementation / Document
-// QML Grid
+// QtQuick 2.0 Grid
+// http://qt-project.org/doc/qt-5.1/qtquick/qml-qtquick2-grid.html
+
+// TODO: Implement remaining properties
 QObjects.Grid = {
   init: function() {
     this._.kNode = new Kinetic.Group();
