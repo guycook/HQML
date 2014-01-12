@@ -70,6 +70,7 @@ QObjects.MouseArea = {
 
     this._.kNode.on('mouseenter.signal', function(kEvent) {
       self._.hasMouse = true;
+      HQML.stage.content.style.cursor = QObjects.MouseArea.cursorMap[self.cursorShape];
       if(self.enabled && self.hoverEnabled) {
         self.entered();
       }
@@ -77,6 +78,7 @@ QObjects.MouseArea = {
 
     this._.kNode.on('mouseleave.signal', function(kEvent) {
       self._.hasMouse = false;
+      HQML.stage.content.style.cursor = 'default';
       clearTimeout(self._.holdTimer);
       if(self.enabled && self.hoverEnabled) {
         self.exited();
@@ -159,6 +161,31 @@ QObjects.MouseArea = {
     return mouse;
   }
 };
+
+QObjects.MouseArea.cursorMap = {};
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.ArrowCursor] = 'default';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.UpArrowCursor] = 'n-resize';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.CrossCursor] = 'crosshair';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.WaitCursor] = 'wait';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.IBeamCursor] = 'text';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.SizeVerCursor] = 'ns-resize';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.SizeHorCursor] = 'ew-resize';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.SizeBDiagCursor] = 'nesw-resize';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.SizeFDiagCursor] = 'nwse-resize';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.SizeAllCursor] = 'move';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.BlankCursor] = 'none';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.SplitVCursor] = 'row-resize';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.SplitHCursor] = 'col-resize';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.PointingHandCursor] = 'pointer';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.ForbiddenCursor] = 'not-allowed';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.OpenHandCursor] = 'grab';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.ClosedHandCursor] = 'grabbing';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.WhatsThisCursor] = 'help';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.BusyCursor] = 'progress';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.DragMoveCursor] = 'default';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.DragCopyCursor] = 'copy';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.DragLinkCursor] = 'alias';
+QObjects.MouseArea.cursorMap[HQML.environment.Qt.BitmapCursor] = 'default';
 
 Object.defineProperties(QObjects.MouseArea, {
   inherits: {
