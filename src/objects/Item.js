@@ -10,10 +10,10 @@ QObjects.Item = {
     return { x: 0, y: 0 };
   },
   layout: function(node) {
-    var x = this.x,
-        y = this.y,
-        width = this.width,
-        height = this.height,
+    var x = this.x, startX = x,
+        y = this.y, startY = y,
+        width = this.width, startWidth = width,
+        height = this.height, startHeight = height,
         border = nullOrUndefined(this.border) ? 0 : this.border.width;
 
     if(!nullOrUndefined(this.anchors.fill)) {
@@ -83,10 +83,10 @@ QObjects.Item = {
     }
 
     // Update internal absolute positioning if affected by anchors
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
+    if(x !== startX) this.x = x;
+    if(y !== startX) this.y = y;
+    if(width !== startWidth) this.width = width;
+    if(height !== startHeight) this.height = height;
 
     node.setX(x + border / 2);
     node.setY(y + border / 2);
