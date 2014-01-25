@@ -1,4 +1,11 @@
-HQML.environment.Qt = {};
+HQML.environment.Qt = {
+  rgba: function(r, g, b, a) {
+    // TODO: Return QML::color object
+    return 'rgba(' + [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255), a].join(', ') + ')';
+  }
+  // TODO: Implement other Qt methods
+};
+
 addEnums(HQML.environment.Qt, {
   // Qt::CursorShape
   ArrowCursor: 0,
