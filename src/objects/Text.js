@@ -20,6 +20,8 @@ QObjects.Text = {
     this.update();
   },
   update: function() {
+    var Text = HQML.environment.Text;
+
     this._.kText.setText(this.text);
     this._.kText.setFill(this.color);
     this._.kText.setFontFamily(this.font.family);
@@ -28,6 +30,25 @@ QObjects.Text = {
     var style = (this.font.bold ? 'bold ' : '') +
                 (this.font.italic ? 'italic' : '');
     this._.kText.setFontStyle(style);
+
+    this._.kText.setStrokeEnabled(this.style === Text.Outline);
+
+    switch(this.style) {
+      case Text.Normal:
+        break;
+
+      case Text.Outline:
+        this._.kText.setStrokeWidth(1);
+        this._.kText.setStroke(this.styleColor);
+        this._.kText.setFontSize(this.font.pixelSize + 2); // Kinetic strokes inside, QML outside
+        break;
+
+      case Text.Raised:
+        break;
+
+      case Text.Sunken:
+        break;
+    }
 
     if(!this._.manualWidth) {
       // If text became larger than previous width getTextWidth will report 0
@@ -39,6 +60,10 @@ QObjects.Text = {
       this.height = Math.ceil(this._.kText.getTextHeight());
     }
     this.layout(this._.kText);
+
+    // TODO: opacity is a property on Item, should be handled there on its
+    //       group/layer so it works for all Item derived objects
+    this._.kText.opacity(this.opacity);
 
     // TODO: Baseline anchor implementation here
 
@@ -57,6 +82,8 @@ Object.defineProperties(QObjects.Text, {
     value: {
       color: 'black',
       text: '',
+      style: HQML.environment.Text.Normal,
+      styleColor: 'black',
       font: {
         family: 'Arial, Helvetica',
         pixelSize: 12, // TODO: Custom setter for font.pointSize which writes correct pixelSize for device

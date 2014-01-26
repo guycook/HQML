@@ -106,6 +106,7 @@ Object.defineProperties(QObjects.Item, {
   defaultProperties: {
     value: {
       data: [],
+      opacity: 1,
       x: 0,
       y: 0,
       width: 0,
