@@ -34,8 +34,8 @@ QObjects.Rectangle = {
       this._.kRect.setFillPriority('color');
     }
     else {
-      this._.kRect.setFillLinearGradientStartPoint([0, 0]);
-      this._.kRect.setFillLinearGradientEndPoint([0, this._.kRect.getHeight()]);
+      this._.kRect.setFillLinearGradientStartPoint({ x: 0, y: 0 });
+      this._.kRect.setFillLinearGradientEndPoint({ x: 0, y: this._.kRect.getHeight() });
       var stopArray = [];
       for(var i = 0; i < this.gradient.stops.length; i++) {
         stopArray.push(this.gradient.stops[i].position, this.gradient.stops[i].color);
