@@ -32,21 +32,26 @@ QObjects.Text = {
     this._.kText.setFontStyle(style);
 
     this._.kText.setStrokeEnabled(this.style === Text.Outline);
+    this._.kText.setShadowOffsetY(this.style === Text.Raised ? 1.2 : -1.2);
 
     switch(this.style) {
       case Text.Normal:
+        this._.kText.setShadowEnabled(false);
         break;
 
       case Text.Outline:
+        this._.kText.setShadowEnabled(false);
         this._.kText.setStrokeWidth(1);
         this._.kText.setStroke(this.styleColor);
         this._.kText.setFontSize(this.font.pixelSize + 2); // Kinetic strokes inside, QML outside
         break;
 
       case Text.Raised:
-        break;
-
       case Text.Sunken:
+        this._.kText.setShadowEnabled(true);
+        this._.kText.setShadowBlur(0);
+        this._.kText.setShadowOffsetX(0);
+        this._.kText.setShadowColor(this.styleColor);
         break;
     }
 
